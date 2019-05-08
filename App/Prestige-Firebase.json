@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "prestige-947a2",
+  "private_key_id": "661f5a13c7255a685cb08decbdb43b255418e78d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCPIJrxKXXbq/jV\ns7kiG+4KDB0rYB0LjbbBhA1ksZllR+ihnrf7BN4dKu03ZZfAqwEH0R0TVW/2N4RC\nNTkeqyXPaAlN7ghq/L9K9fythuqjI/P4cz6PScE+/+BGEtsZtjDWSsdxlWW4eTpR\nAFN5ddpcNrs12yC+hlkg0wbn88sXblHz0HoOyjh5xmm9gahGBt8bob1dm1c/19xs\n1cucp4UAIXEDuud/qAyPZdCuRhnLKLYAEv+bs2IyXn5WLAztifn7MM6KIlWw81E3\n15yZuvN/BuC1io7E7j3WYiRyx6Ww+Ivg0pgZShEMd3VP9+FXMeiEl4KhCJNmM5Ig\nirWIjk9rAgMBAAECggEAPnXEKConvM23scrUqAX4Q3o14I/5HOmjL6ApGCBJCOHw\nq1dQgsMFC0WIb/xt1S7LLFYdkipeydxAY4RGgRO/VFvac5/FHKtf756ZvkB6dOdj\nuLDSREWzh4KypOHlq7rOZTYNA4xm77I3uNGjnAXKXSOlX0NZbsvCaYiuIttJbdeX\nmYrdTTzHphBXmoGcvF1cHxDbMHVPlPv5jx548x6yQkg9MTG5jdEonS4ZMutvnOl7\nqaTsJAdM9NPq0ZfiMtB7rDXMyIwbxpexhqov1P0sFuW4r4ukwhjvqsHBTEKYCQRi\niKKREfXvNp+HV4WenAJGrG96/FhHD64qProhXoQrAQKBgQDLil73ynZ61mb/BiSE\nbJ1GovFQ/vHHUrJYKhXImT29fmyEb/8q8YTGvFrtXqp5O2/o0G0lVmhcSPUYPlE/\ntzrFTHez1+1CJtnP2+UEWIXQO4LfsNDCQwa0fRBhAPbDTlO0yXEk2Igoykw6zs8A\nmbwtjm4pVOL5xUHu8QoaDAR8uwKBgQC0BCrFJfJPQ6Hj7HyC5Ec4Hliuz4NAWVCj\nT6One8pCYL6YkU7wVQqnTFvR5qj+y4FMw6g8S0cBE7l1zDZIf2XGpmc/Oy+qwJAE\nIXthVqUx+ofNjnYpebCrL8YXPoJvRz/72mVx7Gljhv7r0L5ptlzbsrkScUhMuL4i\nPyU79IElEQKBgQDEw4hZLQ1qZHf/E3Yb2lAUaBK3BS7ATM6B8nVKjfGkjWHkicx4\nPDDqWk3gaIKOXgoqW8sXrDeI9zKQ9DVhTgVvlCOn5RbEu4AWs/HqSJVbnxw+mNTG\n5zrFIp3B2Me0OLUs8QwC3ZyLKj2VIDX206eZtrYCGMCvSqUZk0T7tyBjXwKBgBTT\nfpc8YqIk8u/JhkYmXs7xQ9VFkKu7KYcbSZWwzp+LTcGc3gMT852TSfQouVhw9s6I\nvEftdZN8UrJ8I7OTeZTX344DLOqWSJMRxJJoUchMcbWoS6dUusmzRzmdM73oAlEC\n3UWm0jJ/hbKGfeEBBhEsxhiKHpExtl2D7KzZBq/hAoGAVbOEkjLtHpS6xu65Nfli\nrntUGI4S/a2sqaD3ilNWzMx7gN1Y7xwR5q5V7m9LKZc05uyWfM26LmOBtX0MHIsI\nVU7xdC6kYzgKK1zT6SAfh6evd4XODrOOX+c28pjHypwOhC0jj4/mGckK/Dj2Y0b7\n9us3n2QrweTg72dQRDwbiEc=\n-----END PRIVATE KEY-----\n",
+  "client_email": "sybmol-upload@prestige-947a2.iam.gserviceaccount.com",
+  "client_id": "107419352366160804048",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sybmol-upload%40prestige-947a2.iam.gserviceaccount.com"
+}

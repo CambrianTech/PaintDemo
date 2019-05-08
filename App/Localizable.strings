@@ -1,0 +1,55 @@
+/* 
+  Localizable.strings
+  HomeDecoratorApp
+
+  Created by Joel Teply on 11/24/15.
+  Copyright © 2015 Joel Teply. All rights reserved.
+*/
+
+/* Folder name mappings */
+"Bathrooms" = "Bathrooms";
+"Bedrooms" = "Bedrooms";
+"Dining Rooms" = "Dining Rooms";
+"Kids Rooms" = "Kids Rooms";
+"Kitchens" = "Kitchens";
+"Living Rooms" = "Living Rooms";
+"Sunrooms" = "Sunrooms";
+
+"Bathroom" = "Bathroom";
+"Bedroom" = "Bedroom";
+"Dining Room" = "Dining Room";
+"Kids Room" = "Kids Room";
+"Kitchen" = "Kitchen";
+"Living Room" = "Living Room";
+"Sunroom" = "Sunroom";
+
+/* Camera denied instructions */
+"no camera alert title" = "Requires camera access";
+"no camera alert text" = "It looks like your privacy settings are preventing us from accessing your camera. You can fix this by doing the following:\n\n1. Close this app.\n\n2. Open your phone's Settings app.\n\n3. Scroll to the bottom and select this app in the list and turn the camera on.\n\n4. Open this app and try again.";
+"no camera alert text settings" = "It looks like your privacy settings are preventing us from accessing your camera. Click the Go to Settings button, enable camera access, and then open this app and try again.";
+
+"no photos alert title" = "Requires photo library access";
+"no photos alert text" = "It looks like your privacy settings are preventing us from accessing your photo library. You can fix this by doing the following:\n\n1. Close this app.\n\n2. Open your phone's Settings app.\n\n3. Scroll to the bottom and select this app in the list and turn access to the photo library on.\n\n4. Open this app and try again.";
+"no photos alert text settings" = "It looks like your privacy settings are preventing us from accessing your photo library. Click the Go to Settings button, enable photos access, and then open this app and try again.";
+
+
+/* Buttons */
+"Cancel" = "Cancel";
+"Go to Settings" = "Go to Settings";
+"ChooseColorLabel" = "Choose a color →";
+
+/* Landing Tutorial */
+"TutorialStep1" = "The visualizer will let you see paint colors on your walls in real-time video.";
+"TutorialStep2" = "Or you can start with a sample room here.";
+"TutorialStep3" = "Use the color finder to discover colors in your photos or use it to match paint colors with the camera.";
+"TutorialSkipAny" = "OK";
+"TutorialSkipLast" = "OK, Got it";
+
+/* AR Instructions */
+"ChooseColorInstructions" = "First, choose a color below.";
+
+"ARTouchWallInstructions" = "Great. Now tap your wall in the live view (right here) to paint it.";
+
+"StillTouchWallInstructions" = "Great. Now tap the wall in the image to paint it.";
+
+"StillFinalInstructions" = "You can also draw roughly where you would like to paint and it will clean up the edges for you.\n\nUse the ☰ menu at the top for access to many more colors.";

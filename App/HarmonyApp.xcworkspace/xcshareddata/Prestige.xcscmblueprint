@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "C63A7DEC906A860947A3A3979E81CD80C1918933",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "C63A7DEC906A860947A3A3979E81CD80C1918933" : 0,
+    "C3339A4E47BD5CBC797FF900B8CB1DC8A0F9DDF0" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "826BD958-BDC8-4272-B6C2-16A0FBD4643F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "C63A7DEC906A860947A3A3979E81CD80C1918933" : "common-core\/",
+    "C3339A4E47BD5CBC797FF900B8CB1DC8A0F9DDF0" : "common-core\/third-party\/ogles\/src\/ogles\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Prestige",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "cambrian-ios\/HomeHarmony\/Prestige\/Prestige.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/CambrianTech\/ogles_gpgpu",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C3339A4E47BD5CBC797FF900B8CB1DC8A0F9DDF0"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/CambrianTech\/common-core",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C63A7DEC906A860947A3A3979E81CD80C1918933"
+    }
+  ]
+}

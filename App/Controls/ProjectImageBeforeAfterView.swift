@@ -71,7 +71,6 @@ class ProjectImageBeforeAfterView : UIView {
         afterLabel.textColor = self.tintColor
         
         if !hasOneImage {
-            print(self.frame.size.width)
             beforeImageView.frame = CGRect(x: 0, y: 0, width: self.frame.size.width / 2, height: self.frame.size.height)
             beforeLabel.frame = CGRect(x: beforeImageView.frame.origin.x, y: 0, width: beforeImageView.frame.width, height: beforeAfterOverlay.frame.height)
             

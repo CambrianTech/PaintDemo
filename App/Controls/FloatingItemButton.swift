@@ -27,7 +27,7 @@ class FloatingItemButton: UIButton {
     }
     
     func update(_ item: BrandItem) {
-        if item.hasThumbnail {
+        if item.itemType == .Texture {
             self.setTexture(item.getThumbnailPath())
             self.enableLogo(false)
         } else {
@@ -44,7 +44,7 @@ class FloatingItemButton: UIButton {
     
     func enableLogo(_ enable: Bool) {
         if(enable) {
-            self.setImage(nil, for: .normal)
+            self.setImage(UIImage(named: "ic_amazon_dark"), for: .normal)
         } else {
             self.setImage(nil, for: .normal)
         }
@@ -52,7 +52,7 @@ class FloatingItemButton: UIButton {
     
     func setTexture(_ url: URL?) {
         if let url = url {
-            //print("url: \(url)")
+            print("url: \(url)")
             let size = self.frame.height
             let processor = ResizingImageProcessor(referenceSize: CGSize(width: size, height: size), mode: .none) >>
                 RoundCornerImageProcessor(cornerRadius: CGFloat(size/2))

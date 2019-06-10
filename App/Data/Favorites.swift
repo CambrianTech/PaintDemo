@@ -15,7 +15,6 @@ class Favorites : Object {
     static let sharedInstance = Favorites()
     weak var delegate: sharedFavoritesDelegate?
     weak var bottomDelegate: sharedFavoritesDelegate?
-    weak var detailsDelegate: sharedFavoritesDelegate?
     
     @objc dynamic var id = UUID().uuidString
     override class func primaryKey() -> String? { return "id" }
@@ -25,7 +24,7 @@ class Favorites : Object {
     @objc dynamic var created = Date()
     @objc dynamic var modified = Date()
     
-    @objc dynamic var isEmpty: Bool {
+    dynamic var isEmpty: Bool {
         get {
             return self.list.isEmpty
         }
@@ -87,7 +86,7 @@ class Favorites : Object {
             delegate?.updateFavorites(item)
             bottomDelegate?.updateFavorites(item)
         } else {
-            _ = remove(item)
+            remove(item)
             delegate?.updateFavorites(item)
             bottomDelegate?.updateFavorites(item)
         }
@@ -104,7 +103,6 @@ class Favorites : Object {
             asset.itemID = item.itemID
             favorites.list.append(asset)
             favorites.modified = Date()
-            displayMessage("Added \(item.name) to favorites", isSuccess: true)
         }
     }
     
@@ -119,8 +117,6 @@ class Favorites : Object {
                     favorites.list.remove(at: index)
                     favorites.realm?.delete(asset)
                     favorites.modified = Date()
-                    
-                    displayMessage("Removed \(item.name) from favorites", isSuccess: true)
                 }
                 print("item found and deleted")
                 found = true

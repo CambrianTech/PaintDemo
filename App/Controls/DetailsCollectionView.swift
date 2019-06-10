@@ -84,7 +84,7 @@ class DetailsCollectionView : UICollectionView, UIGestureRecognizerDelegate {
             //deepPressGesture.delegate = self
             //self.addGestureRecognizer(deepPressGesture)
             
-            self.addButton.addTarget(self, action: #selector(self.addButtonPressed), for: UIControlEvents.touchUpInside)
+            self.addButton.addTarget(self, action: #selector(self.addButtonPressed), for: UIControl.Event.touchUpInside)
             superview.addSubview(self.addButton)
             self.addButton.isHidden = !canAddItems
 
@@ -124,7 +124,7 @@ class DetailsCollectionView : UICollectionView, UIGestureRecognizerDelegate {
     }
     
     @objc func longPress(_ gesture:UILongPressGestureRecognizer) {
-        if gesture.state == UIGestureRecognizerState.began {
+        if gesture.state == UIGestureRecognizer.State.began {
             let point = gesture.location(in: self)
             let indexPath = self.indexPathForItem(at: point)
             if let indexPath = indexPath, let delegate = delegate as? DetailsCollectionViewDelegate {
@@ -236,10 +236,10 @@ class DetailsAddButton: UIButton {
         
         
         if (!initialized) {
-            self.contentMode = UIViewContentMode.scaleAspectFill
-            self.imageView?.contentMode = UIViewContentMode.scaleAspectFill;
-            self.contentHorizontalAlignment = UIControlContentHorizontalAlignment.center;
-            self.contentVerticalAlignment = UIControlContentVerticalAlignment.center;
+            self.contentMode = UIView.ContentMode.scaleAspectFill
+            self.imageView?.contentMode = UIView.ContentMode.scaleAspectFill;
+            self.contentHorizontalAlignment = UIControl.ContentHorizontalAlignment.center;
+            self.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center;
             
             self.isOpaque = false
             self.layer.cornerRadius = self.frame.size.width / 2;
@@ -247,8 +247,8 @@ class DetailsAddButton: UIButton {
             self.layer.borderColor = self.borderColor.cgColor;
             self.clipsToBounds = true
 
-            self.setTitle("+", for: UIControlState())
-            self.setTitleColor(self.textColor, for: UIControlState())
+            self.setTitle("+", for: UIControl.State())
+            self.setTitleColor(self.textColor, for: UIControl.State())
             self.titleLabel?.font = UIFont.systemFont(ofSize: 40)
             self.contentEdgeInsets.bottom = 5
             

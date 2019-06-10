@@ -39,11 +39,7 @@ class BottomColorSheet : UIViewController, sharedFavoritesDelegate {
         self.view.addGestureRecognizer(swipe)
         
         applyPlainShadow(self.view, offset:CGSize(width:0, height:-3))
-        
-        if (getTargetName() == "Builder") {
-            self.favoritesButton.isHidden = true
-            self.favoritesButton.isEnabled = false
-        }
+        Favorites.sharedInstance.bottomDelegate = self
     }
     
     
@@ -66,31 +62,33 @@ class BottomColorSheet : UIViewController, sharedFavoritesDelegate {
     }
     
     @IBAction func favoritePressed(_ sender: Any) {
-        
+        if let item = self.item {
+            Favorites.sharedInstance.toggle(item)
+            self.favoritesButton.item = item
+        }
     }
+
     
     func update() {
         if let item = self.item {
             self.itemView.backgroundColor = item.color
-            if(item.hasThumbnail) {
+            if(item.itemType == .Texture) {
                 self.itemView.kf.setImage(with: item.getDiffusePath())
-            } else {
-                self.itemView.kf.setImage(with: URL(string:""))
             }
             
-            buyButton.isHidden = (item.storeLink == "")
+            buyButton.isHidden = (item.storeID == "")
             favoritesButton.item = item
             
             var text = ""
             text += "Brand: \(item.getRootCategory().name)\n"
             text += "Name: \(item.name)\n"
-            text += "Product ID: \(item.storeID)"
+            text += "Paint Number: \(item.itemCode)"
             
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.lineSpacing = 10
             
             let attrString = NSMutableAttributedString(string: text)
-            attrString.addAttribute(NSAttributedStringKey.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
+            attrString.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attrString.length))
             
             headerTitle.text = item.name
             
@@ -114,11 +112,10 @@ class BottomColorSheet : UIViewController, sharedFavoritesDelegate {
         
         print("bottom sheet shown: \(show)")
         
-        UIView.animate(withDuration: 0.3, delay: 0.0, options: UIViewAnimationOptions(), animations: {
+        UIView.animate(withDuration: 0.3, delay: 0.0, options: UIView.AnimationOptions(), animations: {
             self.view.frame.origin.y = finalPos
             self.view.layoutSubviews()
         }, completion: { finished in
-            print(!show)
             self.view.isHidden = !show
         })
         

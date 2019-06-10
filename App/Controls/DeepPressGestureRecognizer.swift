@@ -52,7 +52,7 @@ class DeepPressGestureRecognizer: UIGestureRecognizer
     {
         super.touchesEnded(touches, with: event)
         
-        state = deepPressed ? UIGestureRecognizerState.ended : UIGestureRecognizerState.failed
+        state = deepPressed ? UIGestureRecognizer.State.ended : UIGestureRecognizer.State.failed
         
         deepPressed = false
     }
@@ -69,7 +69,7 @@ class DeepPressGestureRecognizer: UIGestureRecognizer
         
         if !deepPressed && forcePercentage >= threshold
         {
-            state = UIGestureRecognizerState.began
+            state = UIGestureRecognizer.State.began
             firstRecordedThreshold = forcePercentage
             
             if vibrateOnDeepPress
@@ -102,7 +102,7 @@ class DeepPressGestureRecognizer: UIGestureRecognizer
     
     func endGesture() {
         firstRecordedThreshold = 0
-        state = UIGestureRecognizerState.ended
+        state = UIGestureRecognizer.State.ended
         deepPressed = false
     }
 }

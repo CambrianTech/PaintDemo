@@ -15,19 +15,19 @@ class BrandItem : Object {
         return ["storeURL", "_view", "view", "color", "text"]
     }
     
-    @objc dynamic var id: String = ""
-    override class func primaryKey() -> String? { return "id"}
+    @objc dynamic var itemID: String = ""
+    override class func primaryKey() -> String? { return "itemID"}
     
     convenience init(key: String) {
         self.init()
-        self.id = key
+        self.itemID = key
     }
     
     @objc dynamic var parentCategory: BrandCategory? = nil
     @objc dynamic var name = ""
-    @objc dynamic var storeID = ""
+    @objc dynamic var itemCode = ""
     @objc dynamic var orderIndex = 0
-    @objc dynamic var storeLink = ""
+    @objc dynamic var storeID = ""
     
     //material, model specific
     @objc dynamic var assetPath = ""
@@ -39,9 +39,18 @@ class BrandItem : Object {
     @objc dynamic var green = 0
     @objc dynamic var blue = 0
     
+    @objc dynamic var hue = 0
+    @objc dynamic var saturation = 0
+    @objc dynamic var brightness = 0
     @objc dynamic var info: String?
     
     @objc dynamic var opacity = 255
     
-    @objc dynamic var type = CBAssetType.paint
+    @objc enum BrandItemType: Int {
+        case Paint
+        case Texture
+        case Model
+    }
+    
+    @objc dynamic var itemType = BrandItemType.Paint
 }

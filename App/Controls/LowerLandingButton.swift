@@ -26,15 +26,13 @@ class LowerLandingButton: UIButton {
                                       width: self.frame.width,
                                       height: self.frame.height * 0.4)
             
-            /*
             if titleLabel.text == "Explore" {
                 titleLabel.frame = CGRect(x: self.frame.width * 0.25,
                                           y: self.frame.height * 0.5,
                                           width: self.frame.width,
                                           height: self.frame.height * 0.4)
             }
-             */
-            titleLabel.textAlignment = NSTextAlignment.center
+            
             self.clipsToBounds = true
         }
     }

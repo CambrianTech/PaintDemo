@@ -15,10 +15,10 @@ class BrandCategory : Object {
         return ["paint", "childPaints", "_cachedChildPaints", "texture", "childTextures", "_cachedChildTextures", "defaultCategory", "view", "_view"]
     }
     
-    @objc dynamic var id = UUID().uuidString
+    @objc dynamic var categoryID = UUID().uuidString
     @objc dynamic var parentCategory: BrandCategory? = nil
     
-    override class func primaryKey() -> String? { return "id"}
+    override class func primaryKey() -> String? { return "categoryID"}
     
     //drawable
     @objc dynamic var assetPath = ""
@@ -26,11 +26,7 @@ class BrandCategory : Object {
     @objc dynamic var isOutdoor = false
     @objc dynamic var name = ""
     @objc dynamic var orderIndex = 0
-    @objc dynamic var displayItem: BrandItem? = nil
-    @objc dynamic var red = 0
-    @objc dynamic var green = 0
-    @objc dynamic var blue = 0
-    var type: CBAssetType?
+    @objc dynamic var selectedItem: BrandItem? = nil
     
     let items = List<BrandItem>()
     let subCategories = List<BrandCategory>()

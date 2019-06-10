@@ -11,18 +11,18 @@ import Foundation
 class CustomBackButton: NSObject {
     
     class func createWithText(text: String, color: UIColor, target: AnyObject?, action: Selector) -> [UIBarButtonItem] {
-        let negativeSpacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.fixedSpace, target: nil, action: nil)
+        let negativeSpacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.fixedSpace, target: nil, action: nil)
         negativeSpacer.width = -8
         let backArrowImage = imageOfBackArrow(color: color)
-        let backArrowButton = UIBarButtonItem(image: backArrowImage, style: UIBarButtonItemStyle.plain, target: target, action: action)
-        let backTextButton = UIBarButtonItem(title: text, style: UIBarButtonItemStyle.plain , target: target, action: action)
+        let backArrowButton = UIBarButtonItem(image: backArrowImage, style: UIBarButtonItem.Style.plain, target: target, action: action)
+        let backTextButton = UIBarButtonItem(title: text, style: UIBarButtonItem.Style.plain , target: target, action: action)
         backTextButton.setTitlePositionAdjustment(UIOffset(horizontal: -12.0, vertical: 0.0), for: UIBarMetrics.default)
         return [negativeSpacer, backArrowButton, backTextButton]
     }
     
     class func createWithImage(image: UIImage, color: UIColor, target: AnyObject?, action: Selector) -> [UIBarButtonItem] {
         // recommended maximum image height 22 points (i.e. 22 @1x, 44 @2x, 66 @3x)
-        let negativeSpacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.fixedSpace, target: nil, action: nil)
+        let negativeSpacer = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.fixedSpace, target: nil, action: nil)
         negativeSpacer.width = -8
         let backArrowImageView = UIImageView(image: imageOfBackArrow(color: color))
         let backImageView = UIImageView(image: image)

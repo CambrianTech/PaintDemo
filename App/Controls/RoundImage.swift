@@ -74,7 +74,7 @@ class RoundImageBordered : RoundImage {
     
     func setTexture(_ url: URL?) {
         if let url = url {
-            //print("url: \(url)")
+            print("url: \(url)")
             let size = self.frame.height
             let processor = ResizingImageProcessor(referenceSize: CGSize(width: size, height: size), mode: .none) >>
                 RoundCornerImageProcessor(cornerRadius: CGFloat(size/2))

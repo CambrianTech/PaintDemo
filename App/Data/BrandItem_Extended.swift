@@ -8,8 +8,6 @@
 
 import Foundation
 import RealmSwift
-//import FirebaseStorage
-import Zip
 
 internal protocol ItemSelectionDelegate : NSObjectProtocol {
     func itemSelected(_ sender: AnyObject, item:BrandItem)
@@ -18,70 +16,57 @@ internal protocol ItemSelectionDelegate : NSObjectProtocol {
 
 extension BrandItem: Drawable {
     
-    var hasThumbnail:Bool {
+    var isFlooring:Bool {
         get {
-            return self.type != .paint
+            return self.itemType == .Texture
+        }
+    }
+    
+    var isPaint:Bool {
+        get {
+            return self.itemType == .Paint
         }
     }
     
     static let metaDataItemIDField = "materialID"
     
     func needsDarkText() -> Bool {
-        let calculation = ((self.red * 299) + (self.green * 587) + (self.blue * 114)) / 1000
-        if calculation < 125 {
-            return false
-        } else {
-            return true
-        }
+        return ImageManager.needsDarkText(CGFloat(hue) / 255.0,
+                                          saturation: CGFloat(saturation) / 255.0,
+                                          brightness: CGFloat(brightness) / 255.0)
     }
 
     
     func getRootCategory() -> BrandCategory {
         var category = self.parentCategory
-        var prevCategory = self.parentCategory
         while(category?.parentCategory != nil) {
-            prevCategory = category!
             category = category?.parentCategory
         }
-        // The while loop will return "Paint" and "Flooring", so get the next category down
-        // This should be used if 'Paint' and 'Flooring' are included in assets db
-        category = prevCategory
         return (category)!
     }
     
     class func itemForID(_ id: String) -> BrandItem? {
-        if id.characters.count > 0 {
+        if id.count > 0 {
             return DataController.sharedInstance.brandContext?.object(ofType: BrandItem.self, forPrimaryKey: id)
         }
         return nil
     }
     
-    class func randomItem(_ itemType:CBAssetType? = nil) -> BrandItem? {
+    class func randomItem() -> BrandItem? {
         if let realm = DataController.sharedInstance.brandContext {
-            
-            let allItems = realm.objects(BrandItem.self)
-            var items = allItems
-            
-            if let itemType = itemType {
-                let predicate = NSPredicate(format: "type == %d",
-                                            itemType.rawValue)
-                items =  allItems.filter(predicate)
-            }
-            
-            if (items.count > 0) {
-                return items[items.count.random]
-            }
+            let items = realm.objects(BrandItem.self)
+            let item = items[items.count.random]
+            return item
         }
         return nil
     }
     
-    class func randomBest() -> BrandItem? {
-        if let paint = BrandItem.randomItem(.paint) {
-            return paint
-        } else if let floor = BrandItem.randomItem(.floor) {
-            return floor
-        } else if let model = BrandItem.randomItem(.model) {
-            return model
+    class func randomPaint() -> BrandItem? {
+        if let realm = DataController.sharedInstance.brandContext {
+            let predicate = NSPredicate(format: "itemType == %d",
+                                        BrandItemType.Paint.rawValue)
+            let items = realm.objects(BrandItem.self).filter(predicate)
+            return items[items.count.random]
         }
         return nil
     }
@@ -119,9 +104,9 @@ extension BrandItem: Drawable {
                 return
             }
             
-//            self.hue = Int(fHue * 360.0)
-//            self.saturation = Int(fSat * 255.0)
-//            self.brightness = Int(fBright * 255.0)
+            self.hue = Int(fHue * 360.0)
+            self.saturation = Int(fSat * 255.0)
+            self.brightness = Int(fBright * 255.0)
         }
     }
     
@@ -133,16 +118,16 @@ extension BrandItem: Drawable {
         let blue = Int(rgba[2] * 255)
         
         let context = DataController.sharedInstance.brandContext
-        
         let predicate = NSPredicate(format: "(red BETWEEN {%i, %i}) AND (green BETWEEN {%i, %i}) AND (blue BETWEEN {%i, %i})",
                                     red - range, red + range, green - range, green + range, blue - range, blue + range)
         let near = context?.objects(BrandItem.self).filter(predicate)
-        //print("near colors count: \(near!.count)")
+        print("near colors count: \(near!.count)")
         return near!
     }
     
     class func getClosestMatch(_ color: UIColor, range:Int!=20) -> BrandItem? {
         let closest = getCloseColors(color, range:range)
+        
         var nearest = CGFloat.greatestFiniteMagnitude
         var bestMatch: BrandItem? = nil
         
@@ -154,17 +139,25 @@ extension BrandItem: Drawable {
             }
         }
         
+        if let _ = bestMatch {
+            print("distance of nearest color: \(nearest)")
+        }
+        
         return bestMatch
     }
+    
+    var isInFavorites: Bool {
+        get {
+            return Favorites.sharedInstance.isInFavorites(self)
+        }
+    }
+    
     
     var view: UIView? {
         get {
             let view = UIImageView()
             view.backgroundColor = self.color
-            view.contentMode = .scaleAspectFill
-            // This is cached
             view.kf.setImage(with: getThumbnailPath())
-            
             return view
         }
     }
@@ -173,33 +166,20 @@ extension BrandItem: Drawable {
         UIApplication.shared.openURL(self.storeURL)
     }
     
-    @objc dynamic var storeURL:URL {
-        return getStoreURL(self.storeLink)
+    dynamic var storeURL:URL {
+        return getStoreURL(self.storeID)
     }
     
-    func getDownloadAssetPath() -> URL {
-        return DataController.getWriteDirectory().appendingPathComponent("dbassets").appendingPathComponent(self.assetPath)
-    }
-    
-    func getBundleAssetPath() -> URL {
-        return URL(fileURLWithPath: Bundle.main.resourcePath!).appendingPathComponent("dbassets").appendingPathComponent(self.assetPath)
-    }
-    
-    func getBestAssetPath() -> URL {
-        
-        let downloadPath = getDownloadAssetPath()
-        let bundlePath = getBundleAssetPath()
-
-        if FileManager.default.fileExists(atPath: bundlePath.path) {
-            return bundlePath
-        } else {
-            return downloadPath
-        }
+    func getAssetPath() -> URL {
+        var url = URL(fileURLWithPath: Bundle.main.resourcePath!)
+        url = url.appendingPathComponent("dbassets")
+        url = url.appendingPathComponent(self.assetPath)
+        return url
     }
 
     func getDiffusePath() -> URL? {
-        if self.type == .floor {
-            var url = getBestAssetPath()
+        if self.itemType == .Texture {
+            var url = getAssetPath()
             url = url.appendingPathComponent("Base_Color.jpg")
             return url
         }
@@ -207,58 +187,12 @@ extension BrandItem: Drawable {
     }
     
     func getThumbnailPath() -> URL? {
-        if self.hasThumbnail {
-            let url = getBestAssetPath()
-            if url == self.getBundleAssetPath() {
-                return url.appendingPathComponent("Thumbnail.jpg")
-            } else {
-                let util = AWSAssetUtility(self)
-                return util.downloadPath().appendingPathComponent("Thumbnail.jpg")
-            }
+        if self.itemType == .Texture {
+            var url = getAssetPath()
+            url = url.appendingPathComponent("Thumbnail.jpg")
+            return url
         }
         return nil
     }
-    
-    func hasAllAssets(_ files:[String]) -> Bool {
-        
-        switch type {
-        case .floor:
-                return (files.count >= 3)
-        case .model:
-                return files.contains(where: {($0 as NSString).pathExtension == "scn"; })
-            default:
-                return true;
-        }
-    }
-    
-    func downloadAssets(completed: @escaping (_ success:Bool) -> Void) {
-        let apath = getBestAssetPath()
-
-        var files = [String]()
-        do {
-            files = try FileManager.default.contentsOfDirectory(atPath: apath.path)
-        } catch { }
-
-        // Make sure the files don't already exist
-        if hasAllAssets(files) {
-            self.downloadCompleted(true, completed)
-            return
-        } else {
-            let downloadUtil = AWSAssetUtility(self)
-            downloadUtil.downloadAsset { success in
-                
-                DispatchQueue.main.async {
-                     completed(success)
-                }
-            }
-        }
-    }
-    
-    func downloadCompleted(_ success:Bool, _ completed: @escaping (_ success:Bool) -> Void) {
-        hideProgress()
-        completed(success)
-    }
 }
-
-
 

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
   switch (lhs, rhs) {
   case let (l?, r?):
@@ -30,13 +29,13 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 
 class ProjectImageBeforeAfterCell: UICollectionViewCell {
-    @IBOutlet weak var beforeAfterSlider: ImageBeforeAfterSlider!
+    @IBOutlet weak var beforeAfterView: ProjectImageBeforeAfterView!
     
     weak var delegate: ProjectImageCellDelegate?
     
     var image: VisualizerImage? {
         didSet {
-            beforeAfterSlider.image = image
+            beforeAfterView.image = image
         }
     }
     
@@ -57,19 +56,14 @@ protocol ProjectImageCollectionDelegate : ProjectImageCellDelegate {
     func projectImageScrolled(_ sender: AnyObject, image:VisualizerImage)
 }
 
-protocol ScrollDelegate : NSObjectProtocol {
-    func projectImageScrolled(indexPath: IndexPath)
-}
-
 class ProjectImageCollection: DetailsCollectionView, ProjectImageCellDelegate, UICollectionViewDelegate, UICollectionViewDataSource {
     
     fileprivate let reuseIdentifier = "ProjectImageBeforeAfterCell"
-    weak var scrollDelegate: ScrollDelegate?
+    
     
     weak internal var imageDelegate: ProjectImageCollectionDelegate?
     var project:VisualizerProject? {
         didSet {
-            
             self.reloadData()
         }
     }
@@ -80,13 +74,12 @@ class ProjectImageCollection: DetailsCollectionView, ProjectImageCellDelegate, U
                 //print("Changed")
                 if let newValue = newValue {
                     self.imageDelegate?.projectImageScrolled(self, image:newValue)
-                    self.scrollDelegate?.projectImageScrolled(indexPath: IndexPath(item: self.project!.getImageIndex(image: newValue), section: 0))
                 }
             }
         }
     }
     
-    @objc dynamic var currentImage:VisualizerImage? {
+    dynamic var currentImage:VisualizerImage? {
         get {
             
             var visibleRect = CGRect()
@@ -155,12 +148,15 @@ class ProjectImageCollection: DetailsCollectionView, ProjectImageCellDelegate, U
             cell.image = image
             cell.delegate = self
         }
+        else {
+            
+        }
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
-        print(self.frame.size.width)
+                
         return CGSize(width: self.frame.size.width, height: self.frame.size.height)
     }
     

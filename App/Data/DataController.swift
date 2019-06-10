@@ -11,8 +11,6 @@ import RealmSwift
 
 class DataController: NSObject {
     var brandContext: Realm?
-    var brandCurrentDataVersion:Double = 0.1
-    
     var projectContext: Realm?
     
     var workingDirectory = DataController.getWriteDirectory()
@@ -20,16 +18,9 @@ class DataController: NSObject {
     override init() {
         super.init()
     
-        refreshSyncedDatabases()
-        
+        self.brandContext = intitializeDataStore("BrandModel", readOnly: true)
         self.projectContext = intitializeDataStore("ProjectModel", readOnly: false)
-    }
-    
-    func refreshSyncedDatabases() {
         
-        self.brandContext = intitializeVersionedDataStore(datastoreName:"BrandModel", bundleVersion:self.brandCurrentDataVersion, readOnly: true) { realm in
-            self.brandContext = realm
-        }
     }
     
     static func getWriteDirectory() -> URL {
@@ -38,108 +29,65 @@ class DataController: NSObject {
     
     static let sharedInstance = DataController()
     
-    func intitializeVersionedDataStore(datastoreName:String, bundleVersion:Double, readOnly:Bool, completed: @escaping (Realm?) -> Void) -> Realm? {
+    func intitializeDataStore(_ datastoreName:String, readOnly:Bool = true, failureCount:Int = 0) -> Realm? {
         // This resource is the same name as your xcdatamodeld contained in your project.
+        
+        //TODO: make work on apple TV
+
         
         /* The directory the application uses to store the Core Data store file.
          This code uses a file named "DataModel.sqlite" in the application's documents directory.
          */
         let storeURL = workingDirectory.appendingPathComponent(datastoreName).appendingPathExtension("realm")
-        print("Store URL: \(storeURL)")
+        
+       
         let exists = FileManager.default.fileExists(atPath: storeURL.path)
-        
-        let bundleURL = Bundle.main.bundleURL.appendingPathComponent(datastoreName).appendingPathExtension("realm")
-        
-        print(FileManager.default.fileExists(atPath: bundleURL.path))
-        
-        var existingDataVersion = UserDefaults.standard.double(forKey: datastoreName)
-        print("EXISTING DATA VERSION \(existingDataVersion)")
-        if (!exists || existingDataVersion < bundleVersion) {
+
+        if (!exists) {
             //bring over from bundle
+            let bundleURL = Bundle.main.bundleURL.appendingPathComponent(datastoreName).appendingPathExtension("realm")
             
             if (FileManager.default.fileExists(atPath: bundleURL.path)) {
+                print("Store does not yet exist at \(storeURL), but found prepopulated file at \(bundleURL)")
+                
                 do {
-                    if (exists) {
-                        print("\(datastoreName) database exists locally, but is outdated from bundle. Upgrading (\(existingDataVersion) < \(bundleVersion))")
-                        try FileManager.default.removeItem(at: storeURL)
-                    } else {
-                        print("\(datastoreName) database does not exist, using bundle version \(bundleVersion)")
-                    }
                     try FileManager.default.copyItem(at: bundleURL, to: storeURL)
-                    UserDefaults.standard.set(bundleVersion, forKey: datastoreName)
-                    existingDataVersion = bundleVersion
+                    print("Successfully copied prepopulated file")
                 } catch {
-                    fatalError("Error loading store: \(error)")
+                    fatalError("Error migrating store: \(error)")
                 }
             }
+        } else {
+            print("Using existing store at \(storeURL)")
         }
-        
-        //go ahead and load the db
-        let downloadUtil = AWSUtility()
-        let key = "\(datastoreName).realm"
-
-        downloadUtil.getObjectTags(key) { (success, tags) in
-            if let versionString = tags.filter({$0.key == "version" }).first?.value,
-                let webVersion = Double(versionString) {
-
-                if (webVersion > existingDataVersion) {
-                    print("\(datastoreName) database needs upgrade from web (\(existingDataVersion) < \(webVersion)), attempting web download.")
-
-                    displayProgress("Downloading database", progress: 0)
-
-                    downloadUtil.downloadObject(key, savePath: storeURL, progressCallback:{ (progress) in
-                        displayProgress("Downloading database", progress: progress.fractionCompleted)
-                    }) { (success) in
-
-                        if (success) {
-                            print("Download of \(datastoreName) database successful. Wrote new version (\(webVersion)), loading it.")
-
-                            UserDefaults.standard.set(webVersion, forKey: datastoreName)
-                            self.brandCurrentDataVersion = webVersion
-                        } else {
-                            print("Download of \(datastoreName) database was unsuccessful, loading existing version \(existingDataVersion).")
-                        }
-
-                        displayProgress("Downloading new database", progress: 100)
-
-                        DispatchQueue.main.async {
-                            hideProgress()
-                            completed(self.intitializeDataStore(datastoreName, readOnly:readOnly))
-                        }
-                    }
-                } else {
-                    print("Version (\(webVersion)) of \(datastoreName) database is current with web, loading it.")
-                    DispatchQueue.main.async {
-                        completed(self.intitializeDataStore(datastoreName, readOnly:readOnly))
-                    }
-                }
-            } else { //tag request failed
-                //maybe no internet, ignore
-                DispatchQueue.main.async {
-                    completed(self.intitializeDataStore(datastoreName, readOnly:readOnly))
-                }
-            }
-        }
-        
-        return intitializeDataStore(datastoreName, readOnly: readOnly);
-    }
-    
-    func intitializeDataStore(_ datastoreName:String, readOnly:Bool = true) -> Realm? {
-        let storeURL = workingDirectory.appendingPathComponent(datastoreName).appendingPathExtension("realm")
         
         var config = Realm.Configuration.defaultConfiguration
         config.fileURL = storeURL
         config.readOnly = readOnly
         config.schemaVersion = 0
         config.migrationBlock = { migration, oldSchemaVersion in
-
+            if config.schemaVersion == oldSchemaVersion {
+                
+            }
         }
         
         do {
             let realm = try Realm(configuration: config)
+            
             return realm
-        } catch let error as NSError  {
-            print("Realm Error %s", error.localizedDescription);
+        } catch {
+            if (failureCount == 0 && FileManager.default.fileExists(atPath: storeURL.path)) {
+                do {
+                    //attempt to delete datastore and recreate
+                    try FileManager.default.removeItem(atPath: storeURL.path)
+                    return intitializeDataStore(datastoreName, readOnly: readOnly, failureCount: failureCount+1)
+                } catch {
+                    fatalError("Error migrating store: \(error)")
+                }
+            } else {
+                let message = "Error occurred:\(error)"
+                fatalError(message)
+            }
         }
         
         return nil

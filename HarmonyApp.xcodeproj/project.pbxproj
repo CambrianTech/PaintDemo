@@ -73,7 +73,6 @@
 		E710CBFB1EAD468C00791CEF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7C86FD761E85B43B00635987 /* Main.storyboard */; };
 		E72CD6FC1EA51A7200CFD081 /* ColorFinderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E72CD6FA1EA51A7200CFD081 /* ColorFinderViewController.swift */; };
 		E72CD7081EA51D1600CFD081 /* ColorFinder.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E72CD7061EA51D1600CFD081 /* ColorFinder.storyboard */; };
-		E77B6B521EB0213200AB6E1C /* CambrianSDK-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E77B6B4D1EB0212200AB6E1C /* CambrianSDK-Info.plist */; };
 		E7B11A6C1E8C6DBF0045CCF6 /* Visualizer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E7B11A6A1E8C6DBF0045CCF6 /* Visualizer.storyboard */; };
 		E7B11A7B1E8DB5360045CCF6 /* ToolsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C56A6341E8D7C8100B2160C /* ToolsViewController.swift */; };
 		E7CF0D7322AEE5F7004B2F5D /* CambrianAR.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7CF0D7222AEE5F7004B2F5D /* CambrianAR.framework */; };
@@ -188,7 +187,6 @@
 		1BCAC8D40987FEFBFE8477A3 /* Pods_defaults_HomeHarmony.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_defaults_HomeHarmony.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		31423F85DEB6CE2C10C2AF73 /* Pods-defaults-ColorPic.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-defaults-ColorPic.release.xcconfig"; path = "App/Pods/Target Support Files/Pods-defaults-ColorPic/Pods-defaults-ColorPic.release.xcconfig"; sourceTree = "<group>"; };
 		5FAD98F3AE6A0987CBBD9838 /* Pods-defaults-CambrianDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-defaults-CambrianDemo.debug.xcconfig"; path = "App/Pods/Target Support Files/Pods-defaults-CambrianDemo/Pods-defaults-CambrianDemo.debug.xcconfig"; sourceTree = "<group>"; };
-		6F3D0C1E1EAA63F4000C831C /* Assets-HH.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets-HH.xcassets"; sourceTree = "<group>"; };
 		6F3D0C291EAA6A7B000C831C /* LowerLandingButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LowerLandingButton.swift; sourceTree = "<group>"; };
 		6F50209E1E92C8E400393AFD /* Assets-Lighting.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets-Lighting.xcassets"; sourceTree = "<group>"; };
 		6FB4F35A1EB11E6900F6058A /* Favorites.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Favorites.swift; sourceTree = "<group>"; };
@@ -196,7 +194,6 @@
 		7C1978731EB398DA0036F46A /* dbassets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = dbassets; sourceTree = "<group>"; };
 		7C1FA2AD1E7708D0007E2DB1 /* RoundButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
 		7C3218F81E858C0000BC7D5D /* CambrianDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CambrianDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7C3218FA1E8590A900BC7D5D /* Assets-Prestige.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets-Prestige.xcassets"; sourceTree = "<group>"; };
 		7C3218FC1E8591CB00BC7D5D /* Assets-Demo.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets-Demo.xcassets"; sourceTree = "<group>"; };
 		7C46B5E61E7207E9003FEA8D /* VisualizerImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisualizerImage.swift; sourceTree = "<group>"; };
 		7C55E19F1EA6A83D0085CDD0 /* Asset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
@@ -238,8 +235,6 @@
 		E769E4981D41945B00AD70C9 /* ProjectDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectDetailsViewController.swift; sourceTree = "<group>"; };
 		E769E4A71D41C1E200AD70C9 /* ProjectImageCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProjectImageCollection.swift; path = ../Controls/ProjectImageCollection.swift; sourceTree = "<group>"; };
 		E769E4C61D42AEA000AD70C9 /* ProjectImageBeforeAfterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProjectImageBeforeAfterView.swift; path = ../Controls/ProjectImageBeforeAfterView.swift; sourceTree = "<group>"; };
-		E77B6B4B1EB0212200AB6E1C /* HomeHarmony-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "HomeHarmony-Info.plist"; sourceTree = "<group>"; };
-		E77B6B4D1EB0212200AB6E1C /* CambrianSDK-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "CambrianSDK-Info.plist"; sourceTree = "<group>"; };
 		E7821CFD1D4BF16A00393DB8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E79001861D06220500C56B5E /* RoomCalculatorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomCalculatorViewController.swift; sourceTree = "<group>"; };
 		E79489D51D02368A006FA93A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -422,8 +417,6 @@
 		E79489D41D02368A006FA93A /* App */ = {
 			isa = PBXGroup;
 			children = (
-				E77B6B4B1EB0212200AB6E1C /* HomeHarmony-Info.plist */,
-				E77B6B4D1EB0212200AB6E1C /* CambrianSDK-Info.plist */,
 				E7456AC71D52789E00778215 /* Utility */,
 				E7C7BF871D075BF000B8765F /* Data */,
 				E79489E71D023714006FA93A /* Screens */,
@@ -432,8 +425,6 @@
 				E79489D51D02368A006FA93A /* AppDelegate.swift */,
 				E79489DC1D02368A006FA93A /* Assets-Shared.xcassets */,
 				6F50209E1E92C8E400393AFD /* Assets-Lighting.xcassets */,
-				6F3D0C1E1EAA63F4000C831C /* Assets-HH.xcassets */,
-				7C3218FA1E8590A900BC7D5D /* Assets-Prestige.xcassets */,
 				7C3218FC1E8591CB00BC7D5D /* Assets-Demo.xcassets */,
 				E7821CFD1D4BF16A00393DB8 /* GoogleService-Info.plist */,
 				7C86FD701E85A25D00635987 /* HarmonyApp-Bridging-Header.h */,
@@ -661,7 +652,6 @@
 				E7CF0D7622AEE647004B2F5D /* CBAssets in Resources */,
 				7C86FD891E85B63A00635987 /* BottomColorSheet.storyboard in Resources */,
 				E7B11A6C1E8C6DBF0045CCF6 /* Visualizer.storyboard in Resources */,
-				E77B6B521EB0213200AB6E1C /* CambrianSDK-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -809,7 +799,7 @@
 					"COCOAPODS=1",
 					"IS_DEMO=1",
 				);
-				INFOPLIST_FILE = "App/CambrianSDK-Info.plist";
+				INFOPLIST_FILE = "App/CambrianDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = YES;
@@ -840,7 +830,7 @@
 					"COCOAPODS=1",
 					"IS_DEMO=1",
 				);
-				INFOPLIST_FILE = "App/CambrianSDK-Info.plist";
+				INFOPLIST_FILE = "App/CambrianDemo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = YES;

@@ -1,0 +1,23 @@
+project '../HarmonyApp.xcodeproj'
+workspace 'HarmonyApp.xcworkspace'
+
+# Uncomment this line to define a global platform for your project
+platform :ios, '11.0'
+
+use_frameworks!
+
+abstract_target 'defaults' do
+
+  source 'https://github.com/CocoaPods/Specs.git'
+
+  pod 'JGProgressHUD'
+  pod 'RealmSwift'
+  pod 'Alamofire'
+  pod 'Kingfisher', '~> 5.0'
+  pod 'SwiftyJSON'
+  pod 'Zip', '~> 1.1'
+  pod 'AWSS3'
+  
+  target 'CambrianDemo'
+
+end

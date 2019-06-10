@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="lOQ-Yg-msT">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="lOQ-Yg-msT">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -13,17 +12,17 @@
         <!--Explore Color View Controller-->
         <scene sceneID="WTH-A8-IeQ">
             <objects>
-                <viewController id="vUO-Fc-Hbn" customClass="ExploreColorViewController" customModule="Builder" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="vUO-Fc-Hbn" customClass="ExploreColorViewController" customModule="CambrianDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="i8t-29-bwp"/>
                         <viewControllerLayoutGuide type="bottom" id="14s-6D-4GP"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="wlw-uY-I3Y">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                        <rect key="frame" x="0.0" y="64" width="387" height="427"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uFO-LV-EdY">
-                                <rect key="frame" x="-4" y="0.0" width="383" height="60"/>
+                                <rect key="frame" x="0.0" y="0.0" width="387" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="WZD-JE-Vbh"/>
                                 </constraints>
@@ -32,7 +31,7 @@
                                 </connections>
                             </containerView>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ov8-Mx-vt7">
-                                <rect key="frame" x="-4" y="60" width="383" height="543"/>
+                                <rect key="frame" x="0.0" y="60" width="387" height="367"/>
                                 <connections>
                                     <segue destination="fOL-re-sgr" kind="embed" id="cnq-s5-8pX"/>
                                 </connections>
@@ -64,21 +63,21 @@
         <!--Brand Category Table View Controller-->
         <scene sceneID="vgY-xl-Z8I">
             <objects>
-                <tableViewController storyboardIdentifier="CategoryTableViewController" id="lOQ-Yg-msT" userLabel="Brand Category Table View Controller" customClass="CategoryTableViewController" customModule="Builder" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="CategoryTableViewController" id="lOQ-Yg-msT" userLabel="Brand Category Table View Controller" customClass="CategoryTableViewController" customModule="CambrianDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="sfS-jz-xIW">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                        <rect key="frame" x="0.0" y="64" width="387" height="427"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="LabelCell" textLabel="Xxw-y6-vDd" style="IBUITableViewCellStyleDefault" id="AFO-CZ-b0f">
-                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="28" width="387" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="AFO-CZ-b0f" id="aLC-gD-1k1">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="387" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Xxw-y6-vDd">
-                                            <rect key="frame" x="16" y="0.0" width="343" height="44"/>
+                                            <rect key="frame" x="15" y="0.0" width="357" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="highlightedColor"/>
@@ -109,9 +108,9 @@
         <!--Explore Color Tab Bar-->
         <scene sceneID="OfM-kt-nNu">
             <objects>
-                <collectionViewController id="zwM-vO-ciT" customClass="ExploreColorTabBar" customModule="Builder" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="UzA-JI-eLR">
-                        <rect key="frame" x="0.0" y="0.0" width="383" height="60"/>
+                <collectionViewController id="zwM-vO-ciT" customClass="ExploreColorTabBar" customModule="CambrianDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="UzA-JI-eLR">
+                        <rect key="frame" x="0.0" y="0.0" width="387" height="60"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.0" green="0.38823529411764707" blue="0.59999999999999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="qrM-ZV-6Qs">
@@ -121,7 +120,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" misplaced="YES" reuseIdentifier="ExploreColorMenuCell" id="UYz-XE-SkO" customClass="ExploreColorMenuCell" customModule="Builder" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ExploreColorMenuCell" id="UYz-XE-SkO" customClass="ExploreColorMenuCell" customModule="CambrianDemo" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="-5" width="150" height="70"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -129,13 +128,13 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="3q5-9R-tpw">
-                                            <rect key="frame" x="8" y="0.0" width="142" height="0.0"/>
+                                            <rect key="frame" x="8" y="0.0" width="134" height="70"/>
                                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                                             <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VbD-ez-pdg">
-                                            <rect key="frame" x="8" y="-11" width="142" height="3"/>
+                                            <rect key="frame" x="8" y="59" width="134" height="3"/>
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="3" id="ne6-qJ-sXi"/>
@@ -179,28 +178,28 @@
         <!--Explore Color Collection-->
         <scene sceneID="cBk-VO-hhx">
             <objects>
-                <collectionViewController id="fOL-re-sgr" customClass="ExploreColorCollection" customModule="Builder" customModuleProvider="target" sceneMemberID="viewController">
-                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="7vm-5W-S4O">
-                        <rect key="frame" x="0.0" y="0.0" width="383" height="543"/>
+                <collectionViewController id="fOL-re-sgr" customClass="ExploreColorCollection" customModule="CambrianDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="7vm-5W-S4O">
+                        <rect key="frame" x="0.0" y="0.0" width="387" height="367"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="tintColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="D1L-P2-jS1">
-                            <size key="itemSize" width="383" height="552"/>
+                            <size key="itemSize" width="360" height="580"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ExploreColorCollectionCell" id="yBn-vj-W1B" customClass="ExploreColorCollectionCell" customModule="Builder" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="-4.5" width="383" height="552"/>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ExploreColorCollectionCell" id="yBn-vj-W1B" customClass="ExploreColorCollectionCell" customModule="CambrianDemo" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="-106.5" width="360" height="580"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="383" height="552"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="360" height="580"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="vJq-iO-yDO" customClass="DetailsCollectionView" customModule="Builder" customModuleProvider="target">
-                                            <rect key="frame" x="18" y="20" width="347" height="542.5"/>
+                                        <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="vJq-iO-yDO" customClass="DetailsCollectionView" customModule="CambrianDemo" customModuleProvider="target">
+                                            <rect key="frame" x="18" y="8" width="324" height="564"/>
                                             <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="3" minimumInteritemSpacing="3" id="ByZ-ke-PI4">
                                                 <size key="itemSize" width="52" height="52"/>
                                                 <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -208,7 +207,7 @@
                                                 <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                             </collectionViewFlowLayout>
                                             <cells>
-                                                <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ExploreColorCell" id="NnT-Ae-aRh" customClass="ExploreColorCell" customModule="Builder" customModuleProvider="target">
+                                                <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ExploreColorCell" id="NnT-Ae-aRh" customClass="ExploreColorCell" customModule="CambrianDemo" customModuleProvider="target">
                                                     <rect key="frame" x="0.0" y="0.0" width="52" height="52"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -226,13 +225,13 @@
                                 </view>
                                 <color key="tintColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstItem="vJq-iO-yDO" firstAttribute="top" secondItem="yBn-vj-W1B" secondAttribute="top" constant="20" id="0Ju-PL-7c7"/>
-                                    <constraint firstAttribute="bottomMargin" secondItem="vJq-iO-yDO" secondAttribute="bottom" constant="-18.5" id="9AL-Ws-7oe"/>
+                                    <constraint firstAttribute="bottomMargin" secondItem="vJq-iO-yDO" secondAttribute="bottom" id="9AL-Ws-7oe"/>
                                     <constraint firstAttribute="bottomMargin" secondItem="vJq-iO-yDO" secondAttribute="bottom" constant="-8" id="HHp-uy-Ko5"/>
                                     <constraint firstItem="vJq-iO-yDO" firstAttribute="leading" secondItem="yBn-vj-W1B" secondAttribute="leadingMargin" constant="10" id="Kge-5t-qP8"/>
                                     <constraint firstAttribute="topMargin" secondItem="vJq-iO-yDO" secondAttribute="top" id="RLY-cx-6dh"/>
-                                    <constraint firstItem="vJq-iO-yDO" firstAttribute="centerX" secondItem="yBn-vj-W1B" secondAttribute="centerX" id="frP-mr-EYu"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="vJq-iO-yDO" secondAttribute="trailing" constant="-8" id="ioA-jv-0Ak"/>
+                                    <constraint firstItem="vJq-iO-yDO" firstAttribute="top" secondItem="yBn-vj-W1B" secondAttribute="topMargin" id="lCe-2I-N7i"/>
+                                    <constraint firstAttribute="trailingMargin" secondItem="vJq-iO-yDO" secondAttribute="trailing" constant="10" id="ujI-7t-NW9"/>
                                     <constraint firstItem="vJq-iO-yDO" firstAttribute="leading" secondItem="yBn-vj-W1B" secondAttribute="leadingMargin" constant="-8" id="xVq-p9-0lf"/>
                                 </constraints>
                                 <variation key="default">
@@ -263,7 +262,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E8U-sx-7ZX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-964" y="891.00449775112452"/>
+            <point key="canvasLocation" x="-963.5" y="891.5"/>
         </scene>
     </scenes>
 </document>

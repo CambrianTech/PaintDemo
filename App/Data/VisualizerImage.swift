@@ -48,7 +48,7 @@ class VisualizerImage : Object {
         })
     }
     
-    @objc dynamic var thumbnail: UIImage? {
+    dynamic var thumbnail: UIImage? {
         get {
             if let path = self.directoryPath?.path {
                 return CBRemodelingScene.getThumbnail(path)
@@ -57,7 +57,7 @@ class VisualizerImage : Object {
         }
     }
     
-    @objc dynamic var originalImagePath: URL? {
+    dynamic var originalImagePath: URL? {
         get {
             if let path = self.directoryPath {
                 return path.appendingPathComponent("scene.jpg")
@@ -66,7 +66,7 @@ class VisualizerImage : Object {
         }
     }
     
-    @objc dynamic var previewImagePath: URL? {
+    dynamic var previewImagePath: URL? {
         get {
             if let path = self.directoryPath {
                 return path.appendingPathComponent("preview.jpg")
@@ -75,7 +75,7 @@ class VisualizerImage : Object {
         }
     }
     
-    @objc dynamic var previewImageExists: Bool {
+    dynamic var previewImageExists: Bool {
         get {
             if let path = previewImagePath?.path {
                 return FileManager.default.fileExists(atPath: path)
@@ -84,7 +84,7 @@ class VisualizerImage : Object {
         }
     }
     
-    @objc dynamic var originalImageExists: Bool {
+    dynamic var originalImageExists: Bool {
         get {
             if let path = originalImagePath?.path {
                 return FileManager.default.fileExists(atPath: path)
@@ -113,7 +113,7 @@ class VisualizerImage : Object {
     }
  */
     
-    @objc dynamic var beforeAfterImage: UIImage? {
+    dynamic var beforeAfterImage: UIImage? {
         get {
             if let path = self.directoryPath?.path {
                 return CBRemodelingScene.getBeforeAfter(path, isHorizontal: true)
@@ -124,7 +124,7 @@ class VisualizerImage : Object {
  
     
     
-    @objc dynamic var directoryPath:URL? {
+    dynamic var directoryPath:URL? {
         get {
             return project?.directoryPath.appendingPathComponent(imageID)
         }

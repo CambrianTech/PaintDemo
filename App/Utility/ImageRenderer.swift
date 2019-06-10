@@ -21,7 +21,7 @@ class ImageRenderer {
             ba = self.image.beforeAfterImage
         }
         
-        guard let _ = self.image.project, let beforeAfter = ba
+        guard let project = self.image.project, let beforeAfter = ba
             else {
             return nil
         }
@@ -73,11 +73,11 @@ class ImageRenderer {
                 let nameTextColor = needsDarkText ? UIColor.darkText : UIColor.white
                 let codeTextColor = needsDarkText ? UIColor.darkText : UIColor.white
                 
-                let text = NSMutableAttributedString(string: "Product: \(item.name)", attributes:
-                    [NSAttributedStringKey.font: font, NSAttributedStringKey.foregroundColor: nameTextColor])
+                let text = NSMutableAttributedString(string: "Paint Color: \(item.name)", attributes:
+                    [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: nameTextColor])
                 text.append(NSAttributedString(string: "\n"))
-                text.append(NSAttributedString(string: "ID: \(item.storeID)", attributes:
-                    [NSAttributedStringKey.font: vendorIDFont, NSAttributedStringKey.foregroundColor: codeTextColor]))
+                text.append(NSAttributedString(string: "Color ID: \(item.itemCode)", attributes:
+                    [NSAttributedString.Key.font: vendorIDFont, NSAttributedString.Key.foregroundColor: codeTextColor]))
                 
                 text.draw(in: textRect)
                 

@@ -64,60 +64,13 @@ class ProjectCell: UICollectionViewCell {
     }
 }
 
-class ProjectCollectionCell: UICollectionViewCell, UICollectionViewDataSource {
-    
-    weak var delegate: ProjectCellDelegate?
-    @IBOutlet weak var allProjectsCollection: AllProjectsCollection!
-    fileprivate var projects: Results<VisualizerProject> {
-        get {
-            return VisualizerProject.latestProjects()
-        }
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        self.contentView.autoresizingMask = [UIViewAutoresizing.flexibleHeight]
-    }
-    
-    override func layoutSubviews() {
-        self.layoutIfNeeded()
-    }
-    
-    func setDataSource() {
-        self.allProjectsCollection.dataSource = self
-    }
-    
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.projects.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProjectCell", for: indexPath) as? ProjectCell else {
-            fatalError("Expected ProjectCell")
-        }
-        cell.project = self.projects[(indexPath as NSIndexPath).row]
-        cell.delegate = self.delegate
-        
-        return cell
-    }
-    
-}
-
-class AllProjectsCollection: UICollectionView {
-
-}
-
 class ProjectCollectionViewController: UICollectionViewController, ProjectCellDelegate, DetailsCollectionViewDelegate {
     
-//    fileprivate let reuseIdentifier = "ProjectCell"
+    fileprivate let reuseIdentifier = "ProjectCell"
     
     weak internal var delegate: ProjectCellDelegate?
     var selectedProject: VisualizerProject?
-//    let visibleCount = 2
+    let visibleCount = 2
     var addButton: UIButton?
     
     fileprivate var projects: Results<VisualizerProject> {
@@ -189,56 +142,31 @@ class ProjectCollectionViewController: UICollectionViewController, ProjectCellDe
     // MARK: UICollectionViewDataSource
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 2
+        return 1
     }
     
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-//        if section == 0 {
-//            return 1
-//        } else {
-//            return self.projects.count
-//        }
-        return 1
+        return self.projects.count
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.section == 0 {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CurrentProjectCell", for: indexPath) as? ProjectCell
-                else {
-                    fatalError("CurrentProjectCell expected")
-            }
-            
-            cell.project = self.projects[(indexPath as NSIndexPath).row]
-            cell.delegate = self
-            
-            return cell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as? ProjectCell
+            else {
+                fatalError("ProjectCell expected")
         }
-        else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProjectCollectionCell", for: indexPath) as? ProjectCollectionCell else {
-                fatalError("ProjectCollectionCell expected")
-            }
-            
-            cell.setDataSource()
-            cell.delegate = self
-            
-            return cell
-        }
+        
+        cell.project = self.projects[(indexPath as NSIndexPath).row]
+        cell.delegate = self
+        
+        return cell
     }
-    
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
         let width = (self.view.frame.width) - 20
-        if indexPath.section == 0 {
-            let height = width * 0.75
-            return CGSize(width: width, height: height)
-        } else {
-            // height is entire height minues the first section
-            let height = (self.view.frame.height - (width * 0.75))
-            return CGSize(width: width, height: height)
-        }
-
+        let height = width * 0.75
+        return CGSize(width: width, height: height)
     }
     
     func projectSelected(_ project:VisualizerProject) {
@@ -247,16 +175,11 @@ class ProjectCollectionViewController: UICollectionViewController, ProjectCellDe
             self.performSegue(withIdentifier: "showPainter", sender: self)
         }
         else {
-//            self.performSegue(withIdentifier: "projectDetails", sender: self)
-            self.performSegue(withIdentifier: "showImages", sender: self)
+            self.performSegue(withIdentifier: "projectDetails", sender: self)
         }
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        if indexPath.section == 0 {
-//            let project = self.projects[(indexPath as NSIndexPath).row]
-//            self.projectSelected(project)
-//        }
         let project = self.projects[(indexPath as NSIndexPath).row]
         self.projectSelected(project)
     }

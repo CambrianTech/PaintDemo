@@ -15,21 +15,20 @@ internal protocol WheelDelegate : NSObjectProtocol {
 }
 
 class SelectorWheel: UIView, SelectorWheelRingDelegate, UIGestureRecognizerDelegate {
-     
+    
      weak internal var delegate: WheelDelegate?
-     
+
      let elementSize = CGSize(width: 120, height: 100)
      var isLandscape = false
-     
-     var initialRadius:CGFloat = 130
-     let elementRadiusClipping:CGFloat = 10
-     
+
+     var initialRadius:CGFloat = 180
+
      var topRing:Int = 0
      
      var hasSetFirst = false
      
      let baseCategory = BrandCategory()
-     
+
      var selectedItem: BrandItem? {
           didSet {
                if(hasSetFirst) {
@@ -41,25 +40,22 @@ class SelectorWheel: UIView, SelectorWheelRingDelegate, UIGestureRecognizerDeleg
      
      func setupInitialRing() {
           baseCategory.name = "baseCategory"
-          
           if let categories = DataController.sharedInstance.brandContext?
                .objects(BrandCategory.self)
-               .filter({$0.parentCategory == nil && !$0.isEmpty()}) {
-               
-               if(categories.count == 1) {
-                    for category in categories.first!.subCategories {
-                         baseCategory.subCategories.append(category)
-                    }
-               } else {
-                    for category in categories {
-                         baseCategory.subCategories.append(category)
-                    }
+               .filter({$0.parentCategory == nil}) {
+               for category in categories {
+                    baseCategory.subCategories.append(category)
+               }
+               // Favorites setup
+               let favorites = Favorites.sharedInstance.getAsCategory()
+               if(favorites.items.count > 0) {
+                    baseCategory.subCategories.append(favorites)
                }
           }
           
           addRing(category: baseCategory)
      }
-     
+
      
      func showHide(_ show:Bool, animated:Bool, animationCallback:(()->(Void))? = nil, completion:(()->(Void))? = nil) {
           if show == !self.isHidden {
@@ -68,14 +64,14 @@ class SelectorWheel: UIView, SelectorWheelRingDelegate, UIGestureRecognizerDeleg
           let screen = UIScreen.main.bounds
           if (animated) {
                self.isHidden = false
-               
-               UIView.animate(withDuration: 0.2, delay: 0.0, options: UIViewAnimationOptions(), animations: {
+            
+               UIView.animate(withDuration: 0.2, delay: 0.0, options: UIView.AnimationOptions(), animations: {
                     if(show) {
                          self.frame.origin.y = screen.height - (self.frame.height * 0.65)
                     } else {
                          self.frame.origin.y = screen.height
                     }
-                    
+                
                     if let handler = animationCallback {
                          handler()
                     }
@@ -85,116 +81,93 @@ class SelectorWheel: UIView, SelectorWheelRingDelegate, UIGestureRecognizerDeleg
                self.superview?.layoutSubviews()
           }
      }
-     
-     
+
+    
      fileprivate var rings:[SelectorWheelRing] = []
      
      func addRing(category:BrandCategory) {
           
           let frame = CGRect(x:0, y:self.frame.height+50, width: self.frame.size.width, height: self.frame.size.height)
-          
+
           let ring = SelectorWheelRing(frame: frame)
           ring.delegate = self
+
           ring.itemSize = self.elementSize
           ring.row = self.rings.count
           ring.isLandscape = self.isLandscape
           applyPlainShadow(ring, offset: CGSize(width: 0, height: -5))
-          
-          if self.rings.isEmpty {
-               ring.initialSetup = true
-          }
-          
+
           self.rings.append(ring)
           self.topRing = rings.count - 1
           self.insertSubview(ring, at: 0)
-          
+
           ring.category = category
           setNeedsLayout()
      }
-     
+    
      override func layoutSubviews() {
           if self.rings.isEmpty { return }
-          
-          //          let innerRadius = self.frame.size.width * 0.35
-          //          let outerRadius = innerRadius + self.elementSize.height + 3
-          
-          self.initialRadius = self.frame.size.width * 0.25
-          let radiusIncrement = self.elementSize.height - self.elementRadiusClipping
-          var innerRadius = initialRadius
-          
+     
+          let innerRadius = self.frame.size.width * 0.35
+          let outerRadius = innerRadius + self.elementSize.height
+     
           var changed = false
-          
+        
           for ring in self.rings {
                if (ring.innerRadius != innerRadius) {
                     changed = true
                }
-               
+            
                ring.innerRadius = innerRadius
-               //               ring.outerRadius = outerRadius
-               ring.outerRadius = ring.innerRadius + radiusIncrement + self.elementRadiusClipping
-               ring.innerRadiusClipping = self.elementRadiusClipping
-               innerRadius += radiusIncrement
+               ring.outerRadius = outerRadius
                ring.drawBG()
           }
-          
+     
           if (changed) {
                ringsChanged()
           }
      }
-     
+
      func updateFavorites() {
-          //          if self.rings[topRing].category?.name == "Favorites" {
-          //               let favorites = Favorites.sharedInstance.getAsCategory()
-          //               print("count \(favorites.items.count)")
-          //               if favorites.items.count > 0 {
-          //                    self.rings[topRing].category = favorites
-          //               } else {
-          //                    print("size \(self.baseCategory.subCategories.count)")
-          //                    self.baseCategory.subCategories.removeLast()
-          //                    print("size \(self.baseCategory.subCategories.count)")
-          //                    rings[0].category = self.baseCategory
-          //                    self.topRing -= 1
-          //                    ringsChanged()
-          //               }
-          //          } else {
-          //               if self.baseCategory.subCategories.filter({ $0.name == "Favorites" }).first == nil {
-          //                    self.baseCategory.subCategories.append(Favorites.sharedInstance.getAsCategory())
-          //                    rings[0].category = baseCategory
-          //               }
-          //               else {
-          //                    let favorites = Favorites.sharedInstance.getAsCategory()
-          //                    if favorites.items.count == 0 {
-          //                         self.baseCategory.subCategories.removeLast()
-          //                         self.rings[0].collectionView.reloadData()
-          //                    }
-          //               }
-          //          }
+          if self.rings[topRing].category?.name == "Favorites" {
+               let favorites = Favorites.sharedInstance.getAsCategory()
+               print("count \(favorites.items.count)")
+               if favorites.items.count > 0 {
+                    self.rings[topRing].category = favorites
+               } else {
+                    print("size \(self.baseCategory.subCategories.count)")
+                    self.baseCategory.subCategories.removeLast()
+                    print("size \(self.baseCategory.subCategories.count)")
+                    rings[0].category = self.baseCategory
+                    self.topRing -= 1
+                    ringsChanged()
+               }
+          } else {
+               if self.baseCategory.subCategories.filter({ $0.name == "Favorites" }).first == nil {
+                    self.baseCategory.subCategories.append(Favorites.sharedInstance.getAsCategory())
+                    rings[0].category = baseCategory
+               }
+                    // goes here if all the favorites have been deleted
+                    // in order to delete the favorites category
+               else {
+                    self.baseCategory.subCategories.removeLast()
+                    self.rings[0].collectionView.reloadData()
+               }
+          }
      }
-     
+    
      func ringsChanged() {
-          UIView.animate(withDuration: 0.5, delay: 0.0, options: UIViewAnimationOptions(), animations: {
+          UIView.animate(withDuration: 0.2, delay: 0.0, options: UIView.AnimationOptions(), animations: {
                self.setNeedsLayout()
-               
+
                var inc = 0
                for ring in self.rings {
-                    if (ring.initialSetup && inc != self.topRing) {
-                         // This is the farthest the initial ring will move down
-                         ring.frame.origin.y = self.frame.height * 0.7
+                    if(inc == self.topRing - 1) {
+                         ring.frame.origin.y = self.frame.height * 0.6
+                    } else if (inc == self.topRing) {
+                         ring.frame.origin.y = 0
                     } else {
-                         if(inc == self.topRing - 1) {
-                              // ring moves below top position
-                              ring.frame.origin.y = self.frame.height * 0.45
-                         } else if (inc == self.topRing) {
-                              // ring is in the top ring position
-                              ring.frame.origin.y = 0
-                              // Top position for initial ring
-                              if ring.initialSetup {
-                                   ring.frame.origin.y = self.frame.height * 0.15
-                              }
-                         } else {
-                              // ring moves out of view completely
-                              ring.frame.origin.y = self.frame.height + 50
-                         }
+                         ring.frame.origin.y = self.frame.height + 50
                     }
                     inc += 1
                }
@@ -215,7 +188,7 @@ class SelectorWheel: UIView, SelectorWheelRingDelegate, UIGestureRecognizerDeleg
           
           for (index, category) in hierarchy.reversed().enumerated() {
                if let position = self.rings[index].categoryIndex(category) {
-                    _ = categorySelected(category, ring: rings[index])
+                    categorySelected(category, ring: rings[index])
                     self.rings[index].scrollPosition = position
                }
           }
@@ -225,7 +198,7 @@ class SelectorWheel: UIView, SelectorWheelRingDelegate, UIGestureRecognizerDeleg
                self.rings[self.topRing].scrollPosition = position
           }
      }
-     
+    
      func categorySelected(_ category: BrandCategory, ring:SelectorWheelRing) -> Bool{
           if ring != rings[topRing] {
                // Detects a ring that is not the top ring selected
@@ -240,7 +213,7 @@ class SelectorWheel: UIView, SelectorWheelRingDelegate, UIGestureRecognizerDeleg
                } else {
                     self.topRing += 1
                     if(category.name == "Favorites") {
-                         //self.rings[topRing].category = Favorites.sharedInstance.getAsCategory() //refresh favorites when they're opened
+                         self.rings[topRing].category = Favorites.sharedInstance.getAsCategory() //refresh favorites when they're opened
                     } else {
                          self.rings[topRing].category = category
                     }

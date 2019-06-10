@@ -5,28 +5,26 @@
 //  Created by Joel Teply on 4/17/17.
 //  Copyright © 2017 Cambrian. All rights reserved.
 //
+
 import UIKit
 
-class ColorFinderViewController: UIViewController, CBColorFinderDelegate, DetailsDelegate {
-    
+class ColorFinderViewController: UIViewController, CBColorFinderDelegate {
+
     @IBOutlet weak var colorFinderView: CBColorFinderView!
     @IBOutlet weak var colorList: UIView!
     @IBOutlet weak var playPauseButton: RoundButton!
-    @IBOutlet weak var controlsContainer: UIView!
     
     private var items = [BrandItem]()
     private var colorCircles = [ColorPickCircle]()
     
     
-    //    weak var bottomSheet: BottomColorSheet!
-    weak var detailsVC: DetailsViewController?
+    weak var bottomSheet: BottomColorSheet!
     
     var live: Bool = true
-    var item: BrandItem?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.colorFinderView.delegate = self
         
         for i in (0..<5) {
@@ -37,7 +35,7 @@ class ColorFinderViewController: UIViewController, CBColorFinderDelegate, Detail
             self.colorFinderView.addSubview(colorCircle)
         }
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -49,34 +47,15 @@ class ColorFinderViewController: UIViewController, CBColorFinderDelegate, Detail
         self.navigationController?.navigationBar.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         self.navigationController?.navigationBar.tintColor = UIColor.white
         self.navigationController?.useTransparentNavigationBar()
-        //        self.view.bringSubview(toFront: colorList)
-        self.colorFinderView.bringSubview(toFront: colorList)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        setupDetails()
-        //setupBottomSheet()
+        setupBottomSheet()
     }
     
     override var prefersStatusBarHidden : Bool {
         return true
-    }
-    
-    func setupDetails() {
-        let colorFinderStoryboard = UIStoryboard(name: "ColorFinder", bundle: nil)
-        self.detailsVC = colorFinderStoryboard.instantiateViewController(withIdentifier: "DetailsView") as? DetailsViewController
-        if let detailsVC = detailsVC {
-            addChildViewController(detailsVC)
-            detailsVC.view.frame = CGRect(x: 0,
-                                          y: self.colorList.frame.minY - self.colorList.frame.height,
-                                          width: self.colorList.frame.width,
-                                          height: self.colorList.frame.height)
-            
-            self.view.addSubview(detailsVC.view)
-            self.detailsVC?.delegate = self
-        }
-        self.detailsVC?.view.isHidden = true
     }
     
     func colorsFound(_ results: [CBColorResult]) {
@@ -87,10 +66,10 @@ class ColorFinderViewController: UIViewController, CBColorFinderDelegate, Detail
         
         if(live) {
             self.colorFinderView.captureCurrentState()
-            playPauseButton.setImage(UIImage(named: "ic_video"), for: .normal)
+            playPauseButton.imageView?.image = UIImage(named: "ic_video")
         } else {
             self.colorFinderView.startRunning()
-            playPauseButton.setImage(UIImage(named: "ic_camera"), for: .normal)
+            playPauseButton.imageView?.image = UIImage(named: "ic_camera")
         }
         live = !live
     }
@@ -134,47 +113,46 @@ class ColorFinderViewController: UIViewController, CBColorFinderDelegate, Detail
     @objc func colorClicked(_ sender: UITapGestureRecognizer) {
         if let colorView = sender.view {
             let item = items[colorView.tag]
-            //            updateBottomSheet(item)
-            self.detailsVC?.item = item
-            self.detailsVC?.view.isHidden = false
+            updateBottomSheet(item)
         }
     }
     
-    //    func setupBottomSheet() {
-    //        let sheetStoryboard = UIStoryboard(name: "BottomColorSheet", bundle: nil)
-    //        bottomSheet = sheetStoryboard.instantiateViewController(withIdentifier: "BottomColorSheet") as! BottomColorSheet
-    //        addChildViewController(bottomSheet)
-    //        self.view.addSubview(bottomSheet.view)
-    //        bottomSheet.view.isHidden = true
-    //    }
-    //
-    //    func updateBottomSheet(_ item: BrandItem) {
-    //        self.bottomSheet.item = item
-    //        self.bottomSheet.show(true)
-    //    }
-    /*
-     //doesn't do item matches, just displays found colors
-     func foundColors(results: [CBColorResult], offset:CGPoint) {
-     
-     self.colorList.subviews.forEach({$0.removeFromSuperview()})
-     var pos = 0
-     
-     for index in self.colorCircles.indices {
-     let circle = colorCircles[index]
-     let result = results[index]
-     
-     print("updating circle at index \(index)")
-     circle.update(color: result.color, position: result.position, offset: offset)
-     
-     
-     let width = Int(self.colorList.frame.width) / Int(results.count)
-     let view = UIView(frame: CGRect(x: pos, y: 0, width: width, height: Int(self.colorList.frame.height)))
-     view.backgroundColor = result.color
-     self.colorList.addSubview(view)
-     pos += width
-     }
-     }
-     */
+    func setupBottomSheet() {
+        let sheetStoryboard = UIStoryboard(name: "BottomColorSheet", bundle: nil)
+        bottomSheet = sheetStoryboard.instantiateViewController(withIdentifier: "BottomColorSheet") as! BottomColorSheet
+        addChild(bottomSheet)
+        self.view.addSubview(bottomSheet.view)
+        bottomSheet.view.isHidden = true
+    }
+    
+    func updateBottomSheet(_ item: BrandItem) {
+        self.bottomSheet.item = item
+        self.bottomSheet.show(true)
+    }
+
+/*
+    //doesn't do item matches, just displays found colors
+    func foundColors(results: [CBColorResult], offset:CGPoint) {
+        
+        self.colorList.subviews.forEach({$0.removeFromSuperview()})
+        var pos = 0
+        
+        for index in self.colorCircles.indices {
+            let circle = colorCircles[index]
+            let result = results[index]
+            
+            print("updating circle at index \(index)")
+            circle.update(color: result.color, position: result.position, offset: offset)
+            
+            
+            let width = Int(self.colorList.frame.width) / Int(results.count)
+            let view = UIView(frame: CGRect(x: pos, y: 0, width: width, height: Int(self.colorList.frame.height)))
+            view.backgroundColor = result.color
+            self.colorList.addSubview(view)
+            pos += width
+        }
+    }
+*/
     
     func foundColors(results: [CBColorResult], offset:CGPoint) {
         
@@ -214,25 +192,6 @@ class ColorFinderViewController: UIViewController, CBColorFinderDelegate, Detail
             view.backgroundColor = self.items[i].color
             self.colorList.addSubview(view)
             pos += width
-        }
-    }
-    
-    func itemPressed(_ item: BrandItem) {
-        self.item = item
-    }
-    
-    func visualizerPressed() {
-        self.performSegue(withIdentifier: "showPainter", sender: self)
-        self.colorFinderView.stopRunning()
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nextScene = segue.destination as? ARViewController {
-            if let item = self.item {
-                print(item.name)
-                nextScene.sendItem(item)
-            }
-            
         }
     }
 }

@@ -11,14 +11,13 @@ class SelectorWheelRingCell: UICollectionViewCell {
     fileprivate var cellText = UILabel()
     
     var angleSpan:CGFloat = 0.2
-    var isLandscape = false
-    var innerRadius:CGFloat = 0
     var outerRadius:CGFloat = 0
+    var innerRadius:CGFloat = 0
     var innerRadiusClipping:CGFloat = 10
-    
-    private var path = UIBezierPath()
-    private var isEnlarged = false
-    private var hasShadow = false
+    var path = UIBezierPath()
+    var isLandscape = false
+    var isEnlarged = false
+    var hasShadow = false
     
     fileprivate func applyClipping() {
         
@@ -32,6 +31,14 @@ class SelectorWheelRingCell: UICollectionViewCell {
         let outerArcStart = CGPoint(
             x: center.x + outerRadius * CGFloat(cosf(startAngle)),
             y: center.y + outerRadius * CGFloat(sinf(startAngle)))
+        
+        //        let outerArcEnd = CGPointMake(
+        //            center.x + outerRadius * CGFloat(cosf(endAngle)),
+        //            center.y + outerRadius * CGFloat(sinf(endAngle)))
+        //
+        //        let innerArcStart = CGPointMake(
+        //            center.x + clippedRadius * CGFloat(cosf(startAngle)),
+        //            center.y + clippedRadius * CGFloat(sinf(startAngle)))
         
         let innerArcEnd = CGPoint(
             x: center.x + clippedRadius * CGFloat(cosf(endAngle)),
@@ -50,30 +57,28 @@ class SelectorWheelRingCell: UICollectionViewCell {
         
         path.close()
         
-        if let view = self.contentView.subviews.first {
-            view.frame = CGRect(x:self.bounds.minX, y:self.bounds.minY + 10,
-                                width:self.bounds.width, height:self.bounds.height-10)
-        }
-        
         let edgeLayer = CAShapeLayer()
         
         edgeLayer.frame = self.bounds
         edgeLayer.path = path.cgPath
-        edgeLayer.strokeColor = UIColor.black.withAlphaComponent(0.3).cgColor
+        edgeLayer.strokeColor = UIColor.black.withAlphaComponent(0.1).cgColor
         edgeLayer.fillColor = nil;
-        edgeLayer.lineWidth = 2.0;
+        edgeLayer.lineWidth = 1.0;
         
         // set the background to the asset image
         //TODO: Make this replace the other image methods when needed
-        if let imageName = self.cellText.text, let image = UIImage(named: imageName) {
+        if let image = UIImage(named: self.cellText.text!) {
             edgeLayer.contents = image.cgImage
         }
+
         contentView.layer.addSublayer(edgeLayer)
         
         let mask = CAShapeLayer()
         mask.frame = self.bounds
         mask.path = path.cgPath
+
         
+        //contentView.subviews[0].frame = self.bounds
         contentView.layer.mask = mask
     }
     
@@ -96,18 +101,15 @@ class SelectorWheelRingCell: UICollectionViewCell {
         let height:CGFloat = self.frame.size.height * 0.8
         let width = self.frame.size.width * 0.7
         
-        cellText.frame = CGRect(x: (self.frame.size.width - width) / 2,
-                                y: (self.frame.size.height - height) / 6 - 10,
-                                width: width, height: height)
-        
+        cellText.frame = CGRect(x: (self.frame.size.width - width) / 2, y: (self.frame.size.height - height) / 6, width: width, height: height)
         cellText.font = UIFont.systemFont(ofSize: 15)
         cellText.textAlignment = .center
         cellText.numberOfLines = 0
-        
         let screen = UIScreen.main.bounds
         if(screen.width > screen.height) {
-            //cellText.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 2)
+            cellText.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 2)
         }
+        
         applyPlainShadow(self, offset: CGSize(), radius: 0, opacity: 0.7)
     }
     
@@ -131,7 +133,6 @@ class SelectorWheelRingCell: UICollectionViewCell {
             let height = (self.outerRadius == self.innerRadius) ? self.bounds.height : self.outerRadius - self.innerRadius
             self.center.y += (circularlayoutAttributes.anchorPoint.y - 0.5) * height
         }
-        
     }
     
     
@@ -156,7 +157,7 @@ class SelectorWheelRingCell: UICollectionViewCell {
             return
         }
         
-        self.superview?.bringSubview(toFront: self)
+        self.superview?.bringSubviewToFront(self)
         
         if (animated) {
             UIView.animate(withDuration: 0.2, delay: 0.01, options: .curveEaseOut, animations: {
@@ -187,6 +188,8 @@ class SelectorWheelRingCell: UICollectionViewCell {
         
         cellText.text = drawable.text
         cellText.textColor = drawable.needsDarkText() ? dark : UIColor.lightText
+        
+        
         
         applyClipping()
     }
@@ -323,17 +326,12 @@ class SelectorWheelRingLayout: UICollectionViewLayout {
         return true
     }
     
-    func offsetForRow(_ row:Int, _ centerOffset:Bool) -> CGFloat {
+    func offsetForRow(_ row:Int) -> CGFloat {
         var size = collectionViewContentSize.width - collectionView!.bounds.width
         if(size == 0) {
             size = 825
         }
         let factor = -angleAtExtreme/(size)
-        if centerOffset {
-            // Change the offset to be inbetween the two cells
-            //print((CGFloat(row) * anglePerItem/factor) / 2)
-            return (CGFloat(row) * anglePerItem/factor) / 2
-        }
         return CGFloat(row) * anglePerItem/factor
     }
     

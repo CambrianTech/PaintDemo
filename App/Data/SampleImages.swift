@@ -42,7 +42,7 @@ class SampleImages {
     
     func loadJson() {
         let jsonURL = "\(baseURL)list.json"
-        //print("json url: \(jsonURL)")
+        print("json url: \(jsonURL)")
         Alamofire.request(jsonURL).responseData { response in
             debugPrint("All Response Info: \(response)")
             
@@ -53,27 +53,23 @@ class SampleImages {
     }
     
     fileprivate func parseJson(_ data:Data) {
-        do {
-            let json:JSON = try JSON(data: data)
-            if let rooms = json["rooms"].array {
-                for room in rooms {
-                    let name = room["name"].stringValue
-                    print(name)
-                    self.rooms.append(SampleRoom(name: room["name"].stringValue))
-                    if let numImages = room["numImages"].int {
-                        for i in 0..<numImages {
-                            let urlString = ("\(baseURL)\(name)/\(i)/scene.jpg").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-                            print(urlString)
-                            if let url = URL(string: urlString!) {
-                                print(url)
-                                self.rooms.last?.addImage(url: url)
-                            }
+        
+        let json:JSON = try! JSON(data: data)
+        if let rooms = json["rooms"].array {
+            for room in rooms {
+                let name = room["name"].stringValue
+                print(name)
+                self.rooms.append(SampleRoom(name: room["name"].stringValue))
+                if let numImages = room["numImages"].int {
+                    for i in 0..<numImages {
+                        if let url = URL.fromString("\(baseURL)\(name)/\(i)/scene.jpg") {
+                            print(url)
+                            self.rooms.last?.addImage(url: url)
                         }
                     }
                 }
             }
-        } catch { }
-        
+        }
         delegate?.imagesLoaded()
     }
     
@@ -83,14 +79,13 @@ class SampleImages {
     
     func downloadZip(room: String, index: String) {
 
-        let urlString = "\(baseURL)\(room)/\(index).zip"
-        let url = URL(string: urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)
+        let url = URL.fromString("\(baseURL)\(room)/\(index).zip")
         let projectDir = VisualizerProject.currentProject.directoryPath
         let id = UUID().uuidString
         let imageDir = projectDir.appendingPathComponent(id)
         let localZipPath = projectDir.appendingPathComponent("sample.zip")
-        print("URL: \(url)")
-        print("Local Path: \(localZipPath)")
+        
+        
         initiateFileDownload(url!, savePath: localZipPath, overwriteFiles: true, completionCallback: { (success) in
             if(success) {
                 
@@ -121,6 +116,7 @@ class SampleImages {
             return
         }
         
+        
         let parentDir = savePath.deletingLastPathComponent().path
         if ensureDirectoryExists(parentDir) {
             print("directory exists")
@@ -133,13 +129,12 @@ class SampleImages {
         Alamofire.download(remotePath, to: destination)
             .downloadProgress { progress in
                 print("Download Progress: \(progress.fractionCompleted)")
-                displayProgress("Downloading...", progress: progress.fractionCompleted)
             }
             .responseData { response in
-                print("initiateFileDownload: destination: \(savePath.path)")
+                print("destination: \(savePath.path)")
                 
                 let result = FileManager.default.fileExists(atPath: savePath.path)
-                print("initiateFileDownload: file exists \(result)")
+                print("fil exists \(result)")
                 
                 DispatchQueue.main.async {
                     completionCallback(result)

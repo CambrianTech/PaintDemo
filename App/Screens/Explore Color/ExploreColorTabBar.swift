@@ -14,6 +14,7 @@ class ExploreColorTabBar: UICollectionViewController {
     let reuseIdentifier = "ExploreColorMenuCell"
     var delegate:BrandCategorySelectionDelegate?
     
+    
     var selectedCell:ExploreColorMenuCell? {
         willSet {
             selectedCell?.isSelected = false
@@ -22,7 +23,6 @@ class ExploreColorTabBar: UICollectionViewController {
     
     var selectedCategory: BrandCategory? {
         didSet {
-            print(selectedCategory?.name)
             selectedCell?.isSelected = false
             self.collectionView?.reloadData()
         }

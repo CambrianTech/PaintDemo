@@ -46,7 +46,6 @@ class CategoryTableViewController: UITableViewController {
     func getSubcategories() -> List<BrandCategory> {
         if let categories = categories {
             for category in categories {
-                print(category.name)
                 if (selectedCategory == nil) {
                     selectedCategory = category
                 }
@@ -87,9 +86,21 @@ class CategoryTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
         
+        //cell.textLabel?.text = self.subCategories[indexPath.section].name
         cell.backgroundColor = UIColor.white
         
-        cell.textLabel?.text = self.subCategories[indexPath.section].name
+        // set the background to the asset image if it is the parent image
+        if let image = UIImage(named: self.subCategories[indexPath.section].name) {
+            cell.imageView?.image = image
+            cell.textLabel?.isHidden = true
+        }
+        // Else fetch the image from the parent
+        else {
+            if self.subCategories[indexPath.section].parentCategory != nil {
+                cell.imageView?.image = UIImage(named: (self.subCategories[indexPath.section].parentCategory?.name)!)
+                cell.textLabel?.text = self.subCategories[indexPath.section].name
+            }
+        }
         return cell
     }
     

@@ -5,6 +5,7 @@
 //  Created by joseph on 3/30/17.
 //  Copyright © 2017 Cambrian. All rights reserved.
 //
+
 import Foundation
 import RealmSwift
 
@@ -24,30 +25,30 @@ class ToolsViewController: UIViewController, OptionsDelegate {
     @IBOutlet weak var listBottomToBottom: NSLayoutConstraint!
     
     @IBOutlet weak var toolsContainer: UIView!
-    
+    @IBOutlet weak var paintContainer: UIView!
     
     @IBOutlet weak var lightingButton: RoundButton!
-    @IBOutlet weak var eraserButton: RoundButton!
-    @IBOutlet weak var brushButton: RoundButton!
-    
+    @IBOutlet weak var eraserButton: UIButton!
+    @IBOutlet weak var brushButton: UIButton!
     
     var currentLighting: CBLightingType = .none
-    var lastLighting: CBLightingType = .none
     
     var isActive: Bool = false
     var toolMode: CBToolMode = CBToolMode.fill
-    var isLiveMode: Bool = false
-    
+    var isLiveMode: Bool = false {
+        didSet {
+            self.paintContainer.isHidden = isLiveMode
+        }
+    }
     var pos = CGPoint(x: 0, y: 0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.listContainer.isHidden = true
-        
         showOptionsList(false, duration: 0)
-        self.setToolColors(.paintbrush)
-        //
-        //        self.paintContainer.layer.cornerRadius = self.paintContainer.frame.width / 2
+        self.setToolColors(nil)
+        
+        self.paintContainer.layer.cornerRadius = self.paintContainer.frame.width / 2
     }
     
     override func viewDidLayoutSubviews() {
@@ -65,30 +66,35 @@ class ToolsViewController: UIViewController, OptionsDelegate {
     }
     
     @IBAction func brushPressed(_ sender: Any) {
-        toolMode = .paintbrush
-        self.delegate?.setToolMode(toolMode)
-        self.setToolColors(.paintbrush)
+        if toolMode == .paintbrush {
+            toolMode = .fill
+            self.delegate?.setToolMode(toolMode)
+            setToolColors(nil)
+        } else {
+            toolMode = .paintbrush
+            self.delegate?.setToolMode(toolMode)
+            setToolColors(self.brushButton.imageView)
+        }
     }
     
     @IBAction func eraserPressed(_ sender: Any) {
-        toolMode = .eraser
-        self.delegate?.setToolMode(toolMode)
-        self.setToolColors(.eraser)
+        if toolMode == .eraser {
+            toolMode = .fill
+            self.delegate?.setToolMode(toolMode)
+            setToolColors(nil)
+        } else {
+            toolMode = .eraser
+            self.delegate?.setToolMode(toolMode)
+            setToolColors(self.eraserButton.imageView)
+        }
     }
-    
     
     func toolsFinish() {
         self.delegate?.toolsFinish()
         showTools(false)
     }
     
-    func toggle() {
-        showTools(self.toolsContainer.isHidden)
-    }
-    
     func showTools(_ show: Bool, duration: TimeInterval = 0.2) {
-        self.eraserButton.isHidden = isLiveMode
-        self.brushButton.isHidden = isLiveMode
         self.toolsContainer.isHidden = false
         UIView.animate(withDuration: duration, animations: {
             if(show) {
@@ -101,17 +107,22 @@ class ToolsViewController: UIViewController, OptionsDelegate {
         })
     }
     
-    func setToolColors(_ mode: CBToolMode) {
+    func setToolColors(_ view: UIImageView?) {
         let color = UIColor.lightGray
         
-        switch mode {
-        case .paintbrush:
+        if view == self.brushButton.imageView {
+            self.brushButton.setImage(UIImage(named: "ic_close"), for: .normal)
             self.brushButton.imageView?.tintColor = .white
             self.eraserButton.imageView?.tintColor = color
-        case .eraser:
+            self.eraserButton.setImage(UIImage(named: "ic_eraser"), for: .normal)
+        } else if view == self.eraserButton.imageView {
+            self.eraserButton.setImage(UIImage(named: "ic_close"), for: .normal)
             self.eraserButton.imageView?.tintColor = .white
             self.brushButton.imageView?.tintColor = color
-        default:
+            self.brushButton.setImage(UIImage(named: "ic_paintbrush"), for: .normal)
+        } else {
+            self.eraserButton.setImage(UIImage(named: "ic_eraser"), for: .normal)
+            self.brushButton.setImage(UIImage(named: "ic_paintbrush"), for: .normal)
             self.brushButton.imageView?.tintColor = color
             self.eraserButton.imageView?.tintColor = color
         }
@@ -128,19 +139,6 @@ class ToolsViewController: UIViewController, OptionsDelegate {
     internal func pickedLighting(type: CBLightingType) {
         self.currentLighting = type
         self.delegate?.setLightingMode(type)
-    }
-    
-    func cancelPressed() {
-        // reset the current lighting to the one applied before lighting was opened
-        self.pickedLighting(type: self.lastLighting)
-    }
-    
-    func applyPressed() {
-        self.lastLighting = self.currentLighting
-    }
-    
-    func getStartType() -> CBLightingType {
-        return self.currentLighting;
     }
     
     func finish() {
@@ -169,28 +167,19 @@ class ToolsViewController: UIViewController, OptionsDelegate {
         for i in 0..<8 {
             let type = CBLightingType(rawValue: i)
             let option = Option(type: type!,
-                                name: names[i],
-                                image: UIImage(named: names[i]))
+                name: names[i],
+                image: UIImage(named: names[i]))
             option.isSelected = (type == currentLighting)
             options.append(option)
         }
         
         return options
     }
-    
-    @IBAction func closePressed(_ sender: Any) {
-        if self.isActive == true {
-            self.showOptionsList(false)
-            self.delegate?.toolsFinish()
-            self.isActive = false
-        }
-    }
 }
 
 
 internal protocol OptionsDelegate : NSObjectProtocol {
     func pickedLighting(type: CBLightingType)
-    func getStartType() -> CBLightingType
 }
 
 class Option {
@@ -202,7 +191,6 @@ class Option {
     var isSelected: Bool = false {
         didSet {
             if (isSelected) {
-                //print("selected \(self.name)")
                 self.cell?.imageView.tintColor = UIColor.white
                 self.cell?.textView.textColor = UIColor.white
             } else {
@@ -251,7 +239,7 @@ class OptionsCollectionView: UICollectionViewController {
         }
         return 0
     }
-    
+
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! OptionCell
         let index = (indexPath as NSIndexPath).row
@@ -273,6 +261,7 @@ class OptionsCollectionView: UICollectionViewController {
     
     @objc func optionPressed(_ sender: UITapGestureRecognizer) {
         let index = sender.view!.tag
+    
         selectItem(index)
     }
     
@@ -284,7 +273,6 @@ class OptionsCollectionView: UICollectionViewController {
         
         let option = self.options[index]
         option.isSelected = true
-        startType = option.type
         self.delegate?.pickedLighting(type: option.type)
     }
     
@@ -295,3 +283,5 @@ class OptionCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var textView: UILabel!
 }
+
+

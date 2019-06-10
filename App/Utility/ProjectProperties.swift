@@ -1,4 +1,4 @@
- //
+//
 //  ProjectProperties.swift
 //  HomeDecoratorApp
 //
@@ -10,10 +10,7 @@ import Foundation
 import Alamofire
 import SwiftyJSON
 import Kingfisher
-import Branch
-import Zip
-//import FirebaseStorage
-import Social
+
 import JGProgressHUD
 
 //globals
@@ -23,7 +20,8 @@ let sqFfPerInterior:Float = 250
 let doorSizeSqFt:Float = 20
 let windowSizeSqFt:Float = 15
 
-let textAttributes = [NSAttributedStringKey.foregroundColor:UIColor.white]
+
+let textAttributes = [NSAttributedString.Key.foregroundColor:UIColor.white]
 
 
 func getStoreURL(_ itemID:String) -> URL {
@@ -32,14 +30,14 @@ func getStoreURL(_ itemID:String) -> URL {
 
 func leftChevronImage() -> UIImage? {
     if let image = UIImage(named:"ic_chevron_left") {
-        return image.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+        return image.withRenderingMode(UIImage.RenderingMode.alwaysTemplate)
     }
     return nil
 }
 
 func rightChevronImage() -> UIImage? {
     if let image = UIImage(named:"ic_chevron_right") {
-        return image.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+        return image.withRenderingMode(UIImage.RenderingMode.alwaysTemplate)
     }
     return nil
 }
@@ -62,7 +60,6 @@ func colorRGBA(_ color:UIColor) -> [CGFloat] {
     var fBlue : CGFloat = 0
     var fAlpha: CGFloat = 0
     
-    print(color.getRed(&fRed, green: &fGreen, blue: &fBlue, alpha: &fAlpha))
     color.getRed(&fRed, green: &fGreen, blue: &fBlue, alpha: &fAlpha);
     
     return [fRed, fGreen, fBlue, fAlpha]
@@ -81,147 +78,70 @@ func ensureDirectoryExists(_ path:String) -> Bool {
     return true
 }
 
-func initiateFileDownload(_ remotePath:URL, savePath:URL,
-                          overwriteFiles:Bool,
-                          progressCallback:((_ progress: Progress) -> Void)? = nil,
-                          completionCallback:@escaping ((_ success: Bool) -> Void)) {
-    
-    if !overwriteFiles && FileManager.default.fileExists(atPath: savePath.path) {
-        completionCallback(true)
-        return
-    }
-    
-    let destination: DownloadRequest.DownloadFileDestination = { _, _ in
-        return (savePath, [.removePreviousFile, .createIntermediateDirectories])
-    }
-        
-    Alamofire.download(remotePath, to: destination)
-        
-        .downloadProgress { progress in
-            if let pc = progressCallback {
-                pc(progress)
-            }
-        }
-        .response { response in
-            
-            var success = false
-            if let error = response.error {
-                print("Download error: \(error.localizedDescription)")
-            } else if let finalPath = response.destinationURL?.path {
-                success = FileManager.default.fileExists(atPath: finalPath)
-            }
-            
-            DispatchQueue.main.async {
-                completionCallback(success)
-            }
-            
-    }
-    
- }
-
 
 
 let progressHUD = JGProgressHUD(style: JGProgressHUDStyle.dark)
 var displayingHUD = false
 
 func displayMessage(_ message:String, isSuccess:Bool=false) {
-    DispatchQueue.main.async {
-        guard let keyWindow = UIApplication.shared.keyWindow else {
-            return
-        }
+    guard let keyWindow = UIApplication.shared.keyWindow else {
+        return
+    }
+    
+    if !displayingHUD && !(progressHUD.isVisible) {
+        progressHUD.textLabel.text = message
+        progressHUD.indicatorView = isSuccess ? JGProgressHUDSuccessIndicatorView() : JGProgressHUDIndicatorView()
+        progressHUD.animation = JGProgressHUDFadeZoomAnimation()
+    }
+    
+    progressHUD.show(in: keyWindow, animated: true)
+    progressHUD.dismiss(afterDelay: 1.0, animated: true)
+}
+
+func displayProgress(_ message:String, progress:Float) {
+    guard let keyWindow = UIApplication.shared.keyWindow else {
+        return
+    }
+    
+    if !displayingHUD && !(progressHUD.isVisible) {
+        displayingHUD = true
+        progressHUD.textLabel.text = message
+        progressHUD.indicatorView = JGProgressHUDRingIndicatorView()
+        progressHUD.animation = JGProgressHUDFadeZoomAnimation()
         
-        if !displayingHUD && !(progressHUD.isVisible) {
-            progressHUD.textLabel.text = message
-            progressHUD.indicatorView = isSuccess ? JGProgressHUDSuccessIndicatorView() : JGProgressHUDIndicatorView()
-            progressHUD.animation = JGProgressHUDFadeZoomAnimation()
+        let delayTime = DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+        DispatchQueue.main.asyncAfter(deadline: delayTime) {
+            if (displayingHUD) {
+                progressHUD.show(in: keyWindow, animated: true)
+            }
+            displayingHUD = false
         }
-        
-        progressHUD.show(in: keyWindow, animated: true)
-        progressHUD.dismiss(afterDelay: 1.0, animated: true)
+    }
+    
+    progressHUD.progress = progress
+    
+    if progress == 1.0 {
+        hideProgress()
     }
 }
 
- func displayProgress(_ message:String, progress:Double) {
-    DispatchQueue.main.async {
-        guard let keyWindow = UIApplication.shared.keyWindow else {
-            return
-        }
-        
-        if !displayingHUD && !(progressHUD.isVisible) {
-            displayingHUD = true
-            progressHUD.textLabel.text = message
-            progressHUD.indicatorView = JGProgressHUDRingIndicatorView()
-            progressHUD.animation = JGProgressHUDFadeZoomAnimation()
-            
-            let delayTime = DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
-            DispatchQueue.main.asyncAfter(deadline: delayTime) {
-                if (displayingHUD) {
-                    progressHUD.show(in: keyWindow, animated: true)
-                }
-                displayingHUD = false
-            }
-        }
-        
-        progressHUD.progress = Float(progress)
-    }
- }
-
- func displayIndeterminateProgress(_ message:String? = nil) {
-    DispatchQueue.main.async {
-        guard let keyWindow = UIApplication.shared.keyWindow else {
-            return
-        }
-        
-        if !displayingHUD && !(progressHUD.isVisible) {
-            displayingHUD = true
-            progressHUD.textLabel.text = message
-            progressHUD.indicatorView = JGProgressHUDIndeterminateIndicatorView()
-            progressHUD.animation = JGProgressHUDFadeZoomAnimation()
-            
-            let delayTime = DispatchTime.now() + Double(Int64(0.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
-            DispatchQueue.main.asyncAfter(deadline: delayTime) {
-                if (displayingHUD) {
-                    progressHUD.show(in: keyWindow, animated: true)
-                }
-                displayingHUD = false
-            }
-        }
-    }
- }
-
- func displayMessage(_ message: String) {
-    DispatchQueue.main.async {
-        guard let keyWindow = UIApplication.shared.keyWindow else {
-            return
-        }
-        let indicator = JGProgressHUD(style: JGProgressHUDStyle.dark)
-        indicator.textLabel.text = message
-        indicator.indicatorView = JGProgressHUDIndicatorView()
-        indicator.show(in: keyWindow)
-        indicator.dismiss(afterDelay: 2.0)
-    }
- }
-
 func hideProgress() {
     displayingHUD = false
-    DispatchQueue.main.async {
-        progressHUD.dismiss(afterDelay: 0.5)
-    }
+    progressHUD.dismiss(afterDelay: 0.5)
 }
 
 let errorHUD = JGProgressHUD(style: JGProgressHUDStyle.dark)
 
- func displayError(message: String) {
-    DispatchQueue.main.async {
-        guard let keyWindow = UIApplication.shared.keyWindow else {
-            return
-        }
-        errorHUD.textLabel.text = message
-        errorHUD.indicatorView = JGProgressHUDErrorIndicatorView()
-        errorHUD.show(in: keyWindow)
-        errorHUD.dismiss(afterDelay: 3.0)
+func displayError(message: String) {
+    guard let keyWindow = UIApplication.shared.keyWindow else {
+        return
     }
- }
+    errorHUD.textLabel.text = message
+    errorHUD.indicatorView = JGProgressHUDErrorIndicatorView()
+    errorHUD.show(in: keyWindow)
+    errorHUD.dismiss(afterDelay: 3.0)
+}
+
 
 func applyPlainShadow(_ view: UIView, offset:CGSize, radius:CGFloat=0, opacity:Float=0.3) {
     let layer = view.layer
@@ -266,179 +186,36 @@ func confirmAction(_ presentingViewController:UIViewController, text:String, com
     presentingViewController.present(alertController, animated: true, completion: nil)
 }
 
-func share(_ presentingViewController:UIViewController, button: UIBarButtonItem, image: VisualizerImage, isImage: Bool, completion: (() -> Void)?=nil) {
+
+func shareProjectImage(_ presentingViewController:UIViewController, button: UIBarButtonItem, image: VisualizerImage, completion: (() -> Void)?=nil) {
     guard let imagePath = image.directoryPath?.path else {
         return
     }
     
-    displayIndeterminateProgress()
-    VisualizerProject.currentProject = image.project
-    /*
     DispatchQueue.main.async(execute: {
         
         let baImage = CBRemodelingScene.getBeforeAfter(imagePath, isHorizontal: true)
         
         DispatchQueue.main.async(execute: {
-            
+
             let renderer = ImageRenderer(image: image)
             guard let renderedImage = renderer.getRenderedImage(baImage) else {
                 return
             }
             
-            let storage = Storage.storage()
-            let storageRef = storage.reference()
-            let imageRef = storageRef.child("project_share_images").child(image.project.projectID)
             
-            let renderedJPEG = UIImageJPEGRepresentation(renderedImage, 1.0)
-            // Upload this image to be used in sharing
-            let uploadTask = imageRef.putData(renderedJPEG!, metadata: nil, completion: { (metadata, error) in
-                guard let metadata = metadata else {
-                    return
+            let avc = UIActivityViewController(activityItems: [renderedImage], applicationActivities:nil)
+
+            avc.popoverPresentationController?.barButtonItem = button
+            avc.completionWithItemsHandler = {
+                (activity, success, items, error) in
+                if let handler = completion , success {
+                    handler()
                 }
-                
-                // get image downloadurl
-                let downloadURL = metadata.downloadURL()
-                
-                
-                //Upload Data to Firebase Storage
-                if isImage {
-                    uploadImage(url: image.directoryPath!, image.imageID)
-                } else {
-                    print("Project path: \(image.project.directoryPath.path)")
-                    uploadProject(url: image.project.directoryPath, image.project.projectID)
-                }
-                
-                // Create a Branch Universal Object
-                let branchUniversalObject: BranchUniversalObject = BranchUniversalObject(canonicalIdentifier: "item/share")
-                branchUniversalObject.imageUrl = downloadURL?.absoluteString
-                if isImage {
-                    branchUniversalObject.addMetadataKey("isImage", value: "true")
-                    branchUniversalObject.addMetadataKey("Id", value: image.imageID)
-                } else {
-                    branchUniversalObject.addMetadataKey("isImage", value: "false")
-                    branchUniversalObject.addMetadataKey("projectName", value: image.project.name)
-                    branchUniversalObject.addMetadataKey("Id", value: image.project.projectID)
-                }
-                
-                let linkProperties: BranchLinkProperties = BranchLinkProperties()
-                linkProperties.feature = "sharing"
-                
-                branchUniversalObject.getShortUrl(with: linkProperties) { (url, error) in
-                    if error == nil {
-                        print("Got my branch link to share: %@", url)
-                        
-                        let rendImage: AnyObject = renderedImage as! AnyObject
-                        
-                        
-                        let avc = UIActivityViewController(activityItems: [URL(string: url!)], applicationActivities:nil)
-                        
-                        avc.popoverPresentationController?.barButtonItem = button
-                        avc.completionWithItemsHandler = {
-                            (activity, success, items, error) in
-                            if let handler = completion , success {
-                                handler()
-                            }
-                        }
-                        hideProgress()
-                        presentingViewController.present(avc, animated: true, completion: nil)
-                    } else {
-                        print(error)
-                    }
-                }
-            })
+            }
+
+            presentingViewController.present(avc, animated: true, completion: nil)
         })
     })
-  */
 }
-
-func uploadImage(url: URL,  _ imageID: String) {
-//    let storageRef = Storage.storage().reference()
-//    let imageRef = storageRef.child("images/\(imageID)")
-//
-//    do {
-//        let zipFilePath = url.appendingPathExtension("zip")
-//        print(zipFilePath.path)
-//        try Zip.zipFiles(paths: [url], zipFilePath: zipFilePath, password: nil, progress: { (progress) in
-//            print("Progress \(progress)")
-//        })
-//        print("ZIP PATH : \(zipFilePath.path)")
-//
-//        let uploadTask = imageRef.putFile(from: zipFilePath, metadata: nil) { (metadata, error) in
-//            if let error = error {
-//                // Uh-oh, an error occurred!
-//                print(error)
-//                return
-//            } else {
-//                // Metadata contains file metadata such as size, content-type, and download URL.
-//                print(zipFilePath.path)
-//            }
-//
-//            do {
-//                try FileManager.default.removeItem(at: url.appendingPathExtension("zip"))        //delete zip to clean up
-//            } catch {
-//                print(error)
-//            }
-//            print("uploaded the zip")
-//        }
-//
-//
-//    } catch {
-//        print("something went wrong")
-//        return
-//    }
-}
-
-func uploadProject(url: URL,  _ projectId: String) {
-//    let storageRef = Storage.storage().reference()
-//    let projectRef = storageRef.child("projects/\(projectId)")
-//    
-//    do {
-//        //        let filePath = Bundle.main.url(forResource: url.path, withExtension: "zip")!
-//        let zipFilePath = url.appendingPathExtension("zip")
-//        print(zipFilePath.path)
-//        try Zip.zipFiles(paths: [url], zipFilePath: zipFilePath, password: nil, progress: { (progress) in
-//            print("Progress \(progress)")
-//        })
-//        print("ZIP PATH : \(zipFilePath.path)")
-//        
-//        let uploadTask = projectRef.putFile(from: zipFilePath, metadata: nil) { (metadata, error) in
-//            if let error = error {
-//                // Uh-oh, an error occurred!
-//                print(error)
-//                return
-//            } else {
-//                // Metadata contains file metadata such as size, content-type, and download URL.
-//                print(zipFilePath.path)
-//            }
-//            
-//            do {
-//                try FileManager.default.removeItem(at: url.appendingPathExtension("zip"))        //delete zip to clean up
-//            } catch {
-//                print(error)
-//            }
-//            print("uploaded the zip")
-//        }
-//        
-//        
-//    } catch {
-//        print("something went wrong")
-//        return
-//    }
-}
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

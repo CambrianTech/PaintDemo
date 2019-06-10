@@ -22,7 +22,6 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
     
     var row = 0
     var isLandscape = false
-    var yPos: CGFloat = 0.0
     
     let backgroundView = UIView()
     var path = UIBezierPath()
@@ -31,23 +30,23 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
     var disableDelegateCall = false
     
     var category: BrandCategory? {
+
         didSet {
             self.collectionView.reloadData()
+            
             self.collectionView.performBatchUpdates({  }) { (completed) in
                 
                 let numItems = self.collectionView.numberOfItems(inSection: 0)
-                if numItems > 3 {
-                    self.collectionView.isScrollEnabled = true
-                }
                 if let position = self.scrollPosition {
                     self.scrollTo(position: position)
                 } else {
-                    self.scrollTo(position: numItems/2, animated: false, centerOffset: self.centerOffset)
+                    self.scrollTo(position: numItems/2, animated: false)
                 }
                 self.scrollPosition = nil
             }
         }
     }
+    
     
     var scrollPosition: Int?
     
@@ -71,19 +70,6 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
     var angleSpan:CGFloat {
         return atan(itemSize.width/self.outerRadius)
     }
-    
-    var initialSetup: Bool = false {
-        // Determine the layout for the first ring only and determine layouts accordingly
-        didSet {
-            if initialSetup {
-                //                self.itemSize = CGSize(width: (self.frame.width / 3), height: 100.0)
-                self.collectionView.isScrollEnabled = false
-                updateLayout()
-            }
-        }
-    }
-    
-    var centerOffset: Bool = false
     
     func updateLayout() {
         if let ringLayout = self.collectionView.collectionViewLayout as? SelectorWheelRingLayout {
@@ -110,6 +96,9 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
         return self.category?.items.index(of: item)
     }
     
+    
+    
+    
     let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), collectionViewLayout: SelectorWheelRingLayout())
     fileprivate let cellReuseIdentifier = "SelectorWheelCell"
     
@@ -124,7 +113,7 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
         collectionView.clipsToBounds = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
-        collectionView.decelerationRate = 0.993
+        collectionView.decelerationRate = UIScrollView.DecelerationRate(rawValue: 0.993)
         
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -133,7 +122,6 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
         addSubview(backgroundView)
         
         addSubview(collectionView)
-//        self.yPos = 0
     }
     
     override init(frame: CGRect) {
@@ -190,11 +178,7 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
         path.close()
         
         backgroundView.backgroundColor = UIColor.white.withAlphaComponent(0.5)
-
         backgroundView.frame = self.frame
-        if initialSetup {
-            backgroundView.frame = CGRect(x: 0, y: self.yPos - 25, width: self.frame.size.width, height: self.frame.size.height + 50)
-        }
         backgroundView.bounds = self.bounds
         
         let mask = CAShapeLayer()
@@ -205,13 +189,15 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        self.collectionView.frame = CGRect(x: 0, y: self.yPos, width: self.frame.size.width, height: self.frame.size.height + 50)
+        self.collectionView.frame = CGRect(x: 0, y: self.frame.height * 0.07, width: self.frame.size.width, height: self.frame.size.height)
         
         self.layer.shouldRasterize = true
         self.layer.rasterizationScale = UIScreen.main.scale
     }
     
-    var numItems: Int {
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int {
+        
         if let category = self.category {
             if category.subCategories.count > 0 {
                 return category.subCategories.count
@@ -220,11 +206,6 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
             }
         }
         return 0
-    }
-    
-    func collectionView(_ collectionView: UICollectionView,
-                        numberOfItemsInSection section: Int) -> Int {
-        return self.numItems
     }
     
     func collectionView(_ collectionView: UICollectionView,
@@ -243,12 +224,6 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
             }
         }
         
-        
-        if let bgColor = drawable.view?.backgroundColor {
-            cell.contentView.backgroundColor = bgColor
-        } else {
-            cell.contentView.backgroundColor = UIColor.darkGray
-        }
         
         cell.angleSpan = self.angleSpan
         cell.innerRadius = self.innerRadius
@@ -280,46 +255,30 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
 
         let existingOffset = self.collectionView.contentOffset.x
         let ringLayout = self.collectionView.collectionViewLayout as? SelectorWheelRingLayout
-        let offset = ringLayout?.offsetForRow(index, centerOffset)
-        
-        if self.collectionView.isScrollEnabled == true {
-            if (abs(offset! - existingOffset) > 1) {
-                self.scrollTo(position: index)
-            } else {
-//                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.03) {
-//                    cell?.setEnlarged(true, animated: true)
-//                }
+        let offset = ringLayout?.offsetForRow(index)
+        if (abs(offset! - existingOffset) > 1) {
+            self.scrollTo(position: index)
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.03) {
+                cell?.setEnlarged(true, animated: true)
             }
         }
         
-        
         if !self.disableDelegateCall {
             if let category = self.category {
-                if category.items.count > 0 {
-                    print("Selected item in \(category.name)")
+                if category.subCategories.count > 0 {
+                    self.delegate?.categorySelected(category.subCategories[index], ring: self)
+                } else if category.items.count > 0 {
                     self.delegate?.itemSelected(category.items[index], row: self.row)
-                }
-                    // skip any category that is a lone category
-                else if category.subCategories[index].subCategories.count == 1 {
-                    let subCategories = category.subCategories[index].subCategories[0].subCategories
-                    _ = self.delegate?.categorySelected(category.subCategories[index].subCategories[0], ring: self)
-                }
-                else if category.subCategories.count > 0 {
-                    if category.subCategories[0].items.count > 0 {
-                        _ = self.delegate?.categorySelected(category.subCategories[index], ring: self)
-                    } else {
-                        _ = self.delegate?.categorySelected(category.subCategories[index], ring: self)
-                    }
-                    
                 }
             }
         }
     }
     
-    func scrollTo(position: Int, animated: Bool = true, centerOffset: Bool = false) {
+    func scrollTo(position: Int, animated: Bool = true) {
         
         if let ringLayout = self.collectionView.collectionViewLayout as? SelectorWheelRingLayout {
-            let offset = ringLayout.offsetForRow(position, centerOffset)
+            let offset = ringLayout.offsetForRow(position)
             self.collectionView.setContentOffset(CGPoint (x: offset, y: 0), animated: animated)
         }
         
@@ -330,27 +289,9 @@ class SelectorWheelRing: UIView, UICollectionViewDelegate, UICollectionViewDataS
     }
     
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-//        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.03) {
-//            self.selectedCell?.setEnlarged(true, animated: true)
-//        }
-    }
-}
-
-extension UIColor {
-    convenience init(red: Int, green: Int, blue: Int) {
-        assert(red >= 0 && red <= 255, "Invalid red component")
-        assert(green >= 0 && green <= 255, "Invalid green component")
-        assert(blue >= 0 && blue <= 255, "Invalid blue component")
-        
-        self.init(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: 1.0)
-    }
-    
-    convenience init(rgb: Int) {
-        self.init(
-            red: (rgb >> 16) & 0xFF,
-            green: (rgb >> 8) & 0xFF,
-            blue: rgb & 0xFF
-        )
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.03) {
+            self.selectedCell?.setEnlarged(true, animated: true)
+        }
     }
 }
 

@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Pods/Pods.xcodeproj">
+      location = "group:../HarmonyApp.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:../HarmonyApp.xcodeproj">
+      location = "group:Pods/Pods.xcodeproj">
    </FileRef>
 </Workspace>

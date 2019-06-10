@@ -9,7 +9,6 @@
 
 import Foundation
 import RealmSwift
-//import SwiftyJSON
 
 internal protocol ProjectImageDelegate : NSObjectProtocol {
     func projectImageSelected(_ sender: AnyObject, image:VisualizerImage)
@@ -34,7 +33,7 @@ class VisualizerProject : Object  {
     
     var _currentImageIndex = -1
     
-    @objc dynamic var currentImageIndex: Int {
+    dynamic var currentImageIndex: Int {
         get {
             if (_currentImageIndex < 0) {
                 var index = 0
@@ -54,7 +53,10 @@ class VisualizerProject : Object  {
         }
     }
     
-    @objc dynamic var mostRecentImage: VisualizerImage? {
+    
+
+    
+    dynamic var mostRecentImage: VisualizerImage? {
         if self.images.count > 0 {
             for image in sortedImages {
                 if image.thumbnail != nil {
@@ -81,15 +83,10 @@ class VisualizerProject : Object  {
     }
  */
     
-    @objc dynamic var isEmpty: Bool {
+    dynamic var isEmpty: Bool {
         get {
             return self.images.count == 0
         }
-    }
-    
-    convenience init(id: String) {
-        self.init()
-        projectID = id
     }
     
     fileprivate static var _currentProject : VisualizerProject?
@@ -116,7 +113,6 @@ class VisualizerProject : Object  {
     }
     
     static func createProject(name: String) -> VisualizerProject {
-        
         let project = createProject()
         try! project.realm?.write {
             project.name = name
@@ -162,7 +158,7 @@ class VisualizerProject : Object  {
         return searchResults
     }
     
-    @objc dynamic var currentImage:VisualizerImage? {
+    dynamic var currentImage:VisualizerImage? {
         get {
             if currentImageIndex < 0 || currentImageIndex >= self.images.count {
                 return nil
@@ -174,17 +170,6 @@ class VisualizerProject : Object  {
                 currentImageIndex = index
             }
         }
-    }
-    
-    func getImageIndex(image: VisualizerImage) -> Int {
-        var index = self.images.count-1
-        for vis in self.images {
-            if vis == image {
-                return index
-            }
-            index -= 1
-        }
-        return -1
     }
     
     func appendScene(_ scene:CBRemodelingScene) {
@@ -231,25 +216,27 @@ class VisualizerProject : Object  {
         }
     }
     
-    func saveCurrentScene(scene:CBRemodelingScene, completion:@escaping (String)->Void) {
+    func saveCurrentScene(scene:CBRemodelingScene) -> String? {
         self.appendScene(scene)
         if let path = currentImage?.directoryPath?.path {
-            scene.save(toDirectory: path, compressed: false, completion: completion)
+            return scene.save(toDirectory: path, compressed: false)
+        } else {
+            return nil
         }
     }
     
-    @objc dynamic var directoryPath:URL {
+    dynamic var directoryPath:URL {
         get {
             return DataController.getWriteDirectory().appendingPathComponent("projects").appendingPathComponent(projectID)
         }
     }
   
     func renameAlert(_ viewController:UIViewController, handler: ((Bool) -> Void)? = nil) {
-        let chooseNameAlert = UIAlertController(title: "Project Name", message: "Enter a name for this project", preferredStyle: UIAlertControllerStyle.alert)
+        let chooseNameAlert = UIAlertController(title: "Project Name", message: "Enter a name for this project", preferredStyle: UIAlertController.Style.alert)
         chooseNameAlert.addAction(UIAlertAction(title: "Save", style: .default, handler:  {
             (alert: UIAlertAction!) -> Void in
             var name = chooseNameAlert.textFields![0].text!
-            if (name.characters.count == 0) {
+            if (name.count == 0) {
                 name = "New Project"
             }
             
@@ -280,10 +267,10 @@ class VisualizerProject : Object  {
         viewController.present(chooseNameAlert, animated: true, completion: nil)
     }
     
-    func shareImageAction(_ viewController:UIViewController, button: UIBarButtonItem, handler: ((Bool) -> Void)? = nil) {
+    func shareAction(_ viewController:UIViewController, button: UIBarButtonItem, handler: ((Bool) -> Void)? = nil) {
         
         if let image = self.currentImage {
-            share(viewController, button: button, image: image, isImage: true) {
+            shareProjectImage(viewController, button: button, image: image) {
                 if let handler = handler {
                     handler(true)
                 }
@@ -295,20 +282,6 @@ class VisualizerProject : Object  {
         }
     }
     
-    func shareProjectAction(_ viewController:UIViewController, button: UIBarButtonItem, handler: ((Bool) -> Void)? = nil) {
-        
-        if let image = self.currentImage {
-            share(viewController, button: button, image: image, isImage: false) {
-                if let handler = handler {
-                    handler(true)
-                }
-            }
-        } else {
-            if let handler = handler {
-                handler(false)
-            }
-        }
-    }
     
     func deleteProject(_ completion: (() -> Void)? = nil) {
         if (self.projectID == VisualizerProject.currentProject.projectID) {

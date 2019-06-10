@@ -21,7 +21,6 @@ class ExploreColorViewController: UIViewController, BrandCategorySelectionDelega
     var selectedCategory: BrandCategory?
         {
         didSet {
-            print(selectedCategory?.name)
             menuCollection?.selectedCategory = selectedCategory
         }
     }
@@ -38,8 +37,8 @@ class ExploreColorViewController: UIViewController, BrandCategorySelectionDelega
     
     func setupBottomSheet() {
         let sheetStoryboard = UIStoryboard(name: "BottomColorSheet", bundle: nil)
-        bottomSheet = sheetStoryboard.instantiateViewController(withIdentifier: "BottomColorSheet") as! BottomColorSheet
-        addChildViewController(bottomSheet)
+        bottomSheet = sheetStoryboard.instantiateViewController(withIdentifier: "BottomColorSheet") as? BottomColorSheet
+        addChild(bottomSheet)
         self.view.addSubview(bottomSheet.view)
         bottomSheet.view.isHidden = true
     }
@@ -52,8 +51,8 @@ class ExploreColorViewController: UIViewController, BrandCategorySelectionDelega
         }
         else if let vc = segue.destination as? ExploreColorCollection {
             self.paintCollection = vc
+            
             self.paintCollection?.category = self.menuCollection?.selectedCell?.category
-//            self.paintCollection?.category = self.selectedCategory
             vc.delegate = self
         }
     }
@@ -63,7 +62,7 @@ class ExploreColorViewController: UIViewController, BrandCategorySelectionDelega
         print(category.name)
         self.paintCollection?.category = category
         // scroll to the correct view
-        self.paintCollection?.collectionView?.scrollToItem(at: indexPath, at: [], animated: true)
+        self.paintCollection?.collectionView?.scrollToItem(at: indexPath, at: [], animated: false)
     }
     
     // dictates what view is selected in the label once a new paint collection is scrolled to
@@ -139,7 +138,7 @@ class ExploreColorCell : UICollectionViewCell {
             self.contentView.backgroundColor = item?.color
             
             if let item = item {
-                if item.hasThumbnail {
+                if item.itemType == .Texture {
                     self.imageView?.isHidden = false
                     imageView?.kf.setImage(with: item.getThumbnailPath())
                 }
@@ -149,14 +148,12 @@ class ExploreColorCell : UICollectionViewCell {
 }
 
 
-//class ExploreColorCollectionCell : UICollectionViewCell, DetailsCollectionViewDelegate {
-class ExploreColorCollectionCell : UICollectionViewCell, UICollectionViewDataSource, DetailsCollectionViewDelegate {
+class ExploreColorCollectionCell : UICollectionViewCell, DetailsCollectionViewDelegate {
     @IBOutlet var collectionView: UICollectionView?
     var delegate:ItemSelectionDelegate?
     
     var category: BrandCategory? {
         didSet {
-            print(category?.name)
             self.collectionView?.backgroundColor = UIColor.clear
             self.collectionView?.backgroundView = nil
             self.collectionView?.reloadData()
@@ -166,13 +163,12 @@ class ExploreColorCollectionCell : UICollectionViewCell, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
         if let colors = self.category?.items {
-            print(colors.count)
             return colors.count
         }
         return 0
     }
     
-    internal func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAtIndexPath indexPath: IndexPath) -> UICollectionViewCell {
         guard let items = self.category?.items, let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ExploreColorCell", for: indexPath) as? ExploreColorCell
             else {
                 fatalError()
@@ -180,7 +176,7 @@ class ExploreColorCollectionCell : UICollectionViewCell, UICollectionViewDataSou
         
         let index = (indexPath as NSIndexPath).row
         let item = items[index]
-        if item.hasThumbnail {
+        if item.itemType == .Texture {
             cell.setupImage()
         }
         cell.item = item
@@ -193,7 +189,7 @@ class ExploreColorCollectionCell : UICollectionViewCell, UICollectionViewDataSou
         let itemsPerLine:CGFloat = 7
         let totalWidth = self.collectionView!.frame.size.width / (itemsPerLine + 0.8)
         let width = totalWidth
-        print(width)
+        
         return CGSize(width: width, height: width)
     }
     
@@ -257,7 +253,7 @@ class ExploreColorCollection: UICollectionViewController {
         
         cell.delegate = self.delegate
         cell.category = categories[(indexPath as NSIndexPath).row]
-        print("Cell CATEGORY : \(cell.category?.name)")
+        
         return cell
     }
     
@@ -288,8 +284,7 @@ class ExploreColorCollection: UICollectionViewController {
         
         let totalHeight = self.view.frame.size.height - flowLayout.sectionInset.left - flowLayout.sectionInset.right
         let height = totalHeight - flowLayout.sectionInset.top - flowLayout.sectionInset.bottom
-        print("WIDTH: \(width)")
-        print("Height: \(height)")
+        
         return CGSize(width: width, height: height)
     }
 }

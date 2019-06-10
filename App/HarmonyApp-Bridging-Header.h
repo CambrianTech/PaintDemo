@@ -10,13 +10,3 @@
 #import <UIKit/UIKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <CambrianAR/CambrianAR.h>
-
-//#import <Fabric/Fabric.h>
-//#import <Crashlytics/Crashlytics.h>
-
-//#import "Firebase.h"
-//#import <FirebaseCore/FirebaseCore.h>
-//#import <FirebaseAuth/FirebaseAuth.h>
-//#import <FirebaseStorage/FirebaseStorage.h>
-//#import <GTMSessionFetcher/GTMSessionFetcher.h>
-

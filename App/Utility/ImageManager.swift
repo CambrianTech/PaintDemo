@@ -25,9 +25,8 @@ class ImageManager:NSObject, UIImagePickerControllerDelegate, UINavigationContro
     
     var pickerCallback:((_ image: UIImage?) -> Void)!
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        let chosenImage = info[UIImagePickerControllerOriginalImage] as! UIImage
-        
+    private func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info:NSDictionary!) {
+        let chosenImage:UIImage = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
         picker.dismiss(animated: true, completion: nil)
         
         if let cb = pickerCallback {
@@ -103,7 +102,7 @@ class ImageManager:NSObject, UIImagePickerControllerDelegate, UINavigationContro
     }
     
     func hasCameraDevice() -> Bool {
-        return UIImagePickerController.isCameraDeviceAvailable(UIImagePickerControllerCameraDevice.rear)
+        return UIImagePickerController.isCameraDeviceAvailable(UIImagePickerController.CameraDevice.rear)
     }
     
     func hasCameraOption() -> Bool {
@@ -116,7 +115,7 @@ class ImageManager:NSObject, UIImagePickerControllerDelegate, UINavigationContro
         return self.photoStatus == .authorized || self.photoStatus == .notDetermined
     }
     
-    func getImage(_ viewController:UIViewController, type:UIImagePickerControllerSourceType?=nil, callback:@escaping (_ image: UIImage?) -> Void) -> Bool {
+    func getImage(_ viewController:UIViewController, type:UIImagePickerController.SourceType?=nil, callback:@escaping (_ image: UIImage?) -> Void) -> Bool {
         
         self.pickerCallback = callback
         
@@ -197,7 +196,7 @@ class ImageManager:NSObject, UIImagePickerControllerDelegate, UINavigationContro
         }
     }
     
-    func showPhotoLibrary(_ viewController:UIViewController, type:UIImagePickerControllerSourceType) {
+    func showPhotoLibrary(_ viewController:UIViewController, type:UIImagePickerController.SourceType) {
         
         let hasPermission:Bool = self.photoStatus == .authorized
         
@@ -222,16 +221,16 @@ class ImageManager:NSObject, UIImagePickerControllerDelegate, UINavigationContro
     func noCameraAccessAlert(_ controller: UIViewController, showSettings:Bool) {
         
         DispatchQueue.main.async { () -> Void in
-            let title = NSLocalizedString("Camera Access", comment:"")
-            let message = NSLocalizedString("Camera access has been disallowed. Please enable it in settings and then return to this app.", comment:"")
+            let title = NSLocalizedString("no camera alert title", comment:"")
+            let message = NSLocalizedString(showSettings ? "no camera alert text settings" : "no camera alert text", comment:"")
             
             
-            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment:""), style: .cancel, handler: nil))
             
             if (showSettings) {
                 alert.addAction(UIAlertAction(title: NSLocalizedString("Go to Settings", comment:""), style: .default, handler: { action in
-                    UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+                    UIApplication.shared.openURL(URL(string: UIApplication.openSettingsURLString)!)
                 }))
             }
             
@@ -245,15 +244,16 @@ class ImageManager:NSObject, UIImagePickerControllerDelegate, UINavigationContro
     func noPhotosAccessAlert(_ controller: UIViewController, showSettings:Bool) {
         
         DispatchQueue.main.async { () -> Void in
-            let title = NSLocalizedString("Photo Gallery Access", comment:"")
-            let message = NSLocalizedString("Photo Gallery access has been disallowed. Please enable it in settings and then return to this app.", comment:"")
+            let title = NSLocalizedString("no photos alert title", comment:"")
+            let message = NSLocalizedString(showSettings ? "no photos alert text settings" : "no photos alert text", comment:"")
             
-            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
+            
+            let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment:""), style: .cancel, handler: nil))
             
             if (showSettings) {
                 alert.addAction(UIAlertAction(title: NSLocalizedString("Go to Settings", comment:""), style: .default, handler: { action in
-                    UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+                    UIApplication.shared.openURL(URL(string: UIApplication.openSettingsURLString)!)
                 }))
             }
             

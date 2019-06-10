@@ -9,87 +9,64 @@
 import UIKit
 import Foundation
 import RealmSwift
-import JGProgressHUD
 
 protocol sharedFavoritesDelegate: NSObjectProtocol {
     func updateFavorites(_ item: BrandItem);
 }
 
-class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDelegate, CBRemodelingViewDelegate {
-    
-    
+class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDelegate, CBRemodelingViewDelegate, sharedFavoritesDelegate {
 
     @IBOutlet weak var augmentedView: CBRemodelingView!
     
     @IBOutlet weak var undoButton: UIButton!
+    @IBOutlet weak var toolButton: UIButton!
     
-    @IBOutlet weak var moreButtonContainer: UIView!
-    @IBOutlet weak var moreButton: RoundButton!
     @IBOutlet weak var assetsButton: RoundButton!
-    @IBOutlet weak var toolsButton: RoundButton!
     @IBOutlet weak var layersContainer: AlphaTouchableView!
     
     @IBOutlet weak var cameraControls: UIView!
     @IBOutlet weak var captureButton: UIButton!
-    var rightButton = UIBarButtonItem()
-    var favoritesBarButton = UIBarButtonItem()
-    var cartBarButton = UIBarButtonItem()
-    var backButton = UIBarButtonItem()
+    @IBOutlet weak var reshootButton: UIButton!
+    @IBOutlet weak var confirmButton: UIButton!
+    var doneButton = UIBarButtonItem()
     //@IBOutlet weak var doneButton: UIBarButtonItem!
     
     @IBOutlet weak var wheelContainer: UIView!
     @IBOutlet weak var floatingItemButton: FloatingItemButton!
     @IBOutlet weak var wheelShowHideButton:UIButton!
-    @IBOutlet weak var productsLabel: UILabel!
     @IBOutlet weak var wheelToBottom: NSLayoutConstraint!
     @IBOutlet weak var cameraControlsHeight: NSLayoutConstraint!
     @IBOutlet weak var favoritesButton: FavoritesButton!
     
     var wheel:SelectorWheel!
     weak var bottomSheet: BottomColorSheet!
-    weak var bottomSearch: SearchBottomSheet!
     weak var assetsVC: AssetsViewController?
     weak var tools: ToolsViewController?
-    @IBOutlet weak var assetContainer: AlphaTouchableView!
-    
-    var isLandscape = false
-    var hasCreatedFloor = false
-    var hasPainted = false
-    
-    let defaults = UserDefaults.standard
     
     var isLiveView = false {
         didSet {
-            self.toggleRightButton()
+            self.navigationItem.rightBarButtonItem?.isEnabled = !isLiveView
         }
     }
-    
-//    var isPainted = false {
-//        didSet {
-////            self.rightButton.isEnabled = isPainted
-//        }
-//    }
-    
-    var sentItem:BrandItem?
     
     var selectedItem:BrandItem? {
         didSet {
             if let item = selectedItem {
                 self.floatingItemButton.item = item
+                self.favoritesButton.item = item
                 self.bottomSheet.item = item
                 self.wheel.selectedItem = item
             }
         }
     }
     
-    let screen = UIScreen.main.bounds
     var callLayout = true
     
     var hasVideoCamera = ImageManager.sharedInstance.hasCameraDevice()
     var image = VisualizerImage()
     var rawImage: UIImage? = nil
     var imagePath: String? = nil
-    var incomingSharedProject: Bool? = false
+    
     
     /************************
      *
@@ -100,23 +77,29 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.isLandscape = UIDevice.current.userInterfaceIdiom == .pad
-        
-        moreButton.isHidden = true
+
         setupWheel()
         
         floatingItemButton.item = self.selectedItem
         
-        self.augmentedView.delegate = self
+        self.favoritesButton.isHidden = true
         
+        self.augmentedView.delegate = self
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
-        self.rightButton = UIBarButtonItem(title: "",
-                                           style: UIBarButtonItemStyle.done,
-                                           target: self,
-                                           action: #selector(self.rightButtonPressed))
-        self.navigationItem.setRightBarButtonItems([self.rightButton],
-                                                   animated: false)
+        
+        self.navigationItem.hidesBackButton = true
+        navigationItem.leftBarButtonItems = CustomBackButton.createWithText(text: "Back",
+                                                                            color: UIColor.black,
+                                                                            target: self,
+                                                                            action: #selector(self.backPressed))
+
+        
+        self.doneButton = UIBarButtonItem(title: "Done",
+                                          style: UIBarButtonItem.Style.done,
+                                          target: self,
+                                          action: #selector(self.donePressed))
+        self.doneButton.isEnabled = false
+        self.navigationItem.rightBarButtonItem = self.doneButton
         
         applyPlainShadow(self.wheelShowHideButton, offset:CGSize(width:0, height:3), radius: 3, opacity: 0.7)
         
@@ -124,17 +107,7 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
         self.navigationController?.navigationBar.tintColor = UIColor.white
         self.navigationController?.useTransparentNavigationBar()
         
-        self.undoButton.isEnabled = true
-        self.rightButton.isEnabled = true
-        
-        navigationItem.leftBarButtonItems = nil
-        self.backButton = UIBarButtonItem(title: "Back",
-                                          style: UIBarButtonItemStyle.done,
-                                          target: self,
-                                          action: #selector(self.backPressed))
-        navigationItem.setLeftBarButton(self.backButton,
-                                        animated: false)
-        
+        Favorites.sharedInstance.delegate = self
     }
     
     override var prefersStatusBarHidden : Bool {
@@ -143,51 +116,26 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
     
     func setupWheel() {
         self.wheel = SelectorWheel()
-    
-        wheel.isLandscape = self.isLandscape
         let height:CGFloat = 125
-        var width = screen.width
-        var x:CGFloat = 0
-        if(isLandscape) {
-            width = screen.width * 0.66
-            x = screen.width * 0.166
-        }
-        let frame = CGRect(x: x, y: self.wheelContainer.frame.height - height, width: width, height: height)
+        let frame = CGRect(x: 0, y: self.wheelContainer.frame.height - height, width: self.view.frame.width, height: height)
         self.wheel.frame = frame
-
+        
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
             self.showWheel(true)
         }
         
         self.wheel.delegate = self
         self.wheel.setupInitialRing()
-        self.wheelContainer.addSubview(self.wheel)
+        self.wheelContainer.addSubview(wheel)
     }
     
-    func setupMoreButton() {
-        
-        self.moreButton.frame = self.moreButtonContainer.bounds
-        self.moreButtonContainer.addSubview(moreButton)
-        moreButton.isHidden = false
-    }
     
     func setupBottomSheet() {
         let sheetStoryboard = UIStoryboard(name: "BottomColorSheet", bundle: nil)
         bottomSheet = sheetStoryboard.instantiateViewController(withIdentifier: "BottomColorSheet") as! BottomColorSheet
-        addChildViewController(bottomSheet)
+        addChild(bottomSheet)
         self.view.addSubview(bottomSheet.view)
         bottomSheet.view.isHidden = true
-        if (getTargetName() == "Builder") {
-            bottomSheet.favoritesButton.isHidden = true
-        }
-    }
-    
-    func setupSearchExplore() {
-        let searchStoryboard = UIStoryboard(name: "Search", bundle: nil)
-        bottomSearch = searchStoryboard.instantiateViewController(withIdentifier: "bottomSearchSheet") as! SearchBottomSheet
-        addChildViewController(bottomSearch)
-        self.view.addSubview(bottomSearch.view)
-        bottomSearch.view.isHidden = true
     }
     
     func swipeWheel(gesture: UIGestureRecognizer) {
@@ -197,15 +145,10 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
     func setupTools() {
         let visualizerStoryboard = UIStoryboard(name: "Visualizer", bundle: nil)
         self.tools = visualizerStoryboard.instantiateViewController(withIdentifier: "Tools") as? ToolsViewController
-        self.view.layoutIfNeeded()
         if let tools = tools {
-            addChildViewController(tools)
+            addChild(tools)
             self.view.addSubview(tools.view)
-            tools.showTools(false)
-            if (getTargetName() == "Builder") {
-                toolsButton.frame = CGRect(x: self.moreButtonContainer.frame.minX, y: self.moreButton.frame.maxY + (self.moreButton.frame.height + 8), width: self.moreButton.frame.width, height: self.moreButton.frame.height)
-            }
-            tools.pos = CGPoint(x: toolsButton.frame.minX - tools.toolsContainer.frame.width - 10, y: toolsButton.frame.minY)
+            tools.pos = CGPoint(x: toolButton.frame.minX, y: toolButton.frame.maxY + 10)
             tools.isLiveMode = isLiveView
         }
         self.tools?.delegate = self
@@ -215,20 +158,13 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
         let visualizerStoryboard = UIStoryboard(name: "Visualizer", bundle: nil)
         self.assetsVC = visualizerStoryboard.instantiateViewController(withIdentifier: "Layers") as? AssetsViewController
         if let assetsVC = assetsVC {
-            addChildViewController(assetsVC)
-            assetsVC.view.frame = CGRect(x: assetContainer.frame.width, y: 0, width: assetContainer.frame.width, height: assetContainer.frame.height)
-            assetsVC.view.isHidden = true
-            //self.view.addSubview(assetsVC.view)
-            assetContainer.addSubview(assetsVC.view)
+            addChild(assetsVC)
+            assetsVC.view.frame = CGRect(x: assetsButton.frame.minX, y: assetsButton.frame.maxY + 10, width: assetsButton.frame.width, height: assetsButton.frame.width * 4)
+            
+            self.view.addSubview(assetsVC.view)
             assetsVC.delegate = self
-            assetsVC.maxAssets = 4
             assetsVC.isSample = (self.augmentedView.scene as CBRemodelingScene).isMasked
             assetsVC.setup(image: image)
-        }
-        
-        if (getTargetName() == "Builder") {
-            self.assetsButton.isHidden = true
-            self.assetsButton.isEnabled = false
         }
     }
     
@@ -236,13 +172,13 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
         super.viewWillAppear(true)
   
         if let rawImage = self.rawImage {
-            //print("loading image")
+            print("loading image")
             if let scene = CBRemodelingScene(uiImage: rawImage) {
                 self.augmentedView.scene = scene
                 enableLiveView(false)
             }
         } else if let imagePath = self.imagePath {
-            //print("loading image from path")
+            print("loading image from path")
             if let scene = CBRemodelingScene(path: imagePath) {
                 self.augmentedView.scene = scene
                 enableLiveView(false)
@@ -254,91 +190,45 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
         image = VisualizerImage.getImage(scene.sceneID)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        //self.navigationController?.navigationBar.backgroundColor = UIColor.clear
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
         if callLayout {
-            self.setupMoreButton()
-            self.setupBottomSheet()
-            
-            self.setupAssetVC()
-            
-            if let sentItem = self.sentItem {
-                print(sentItem.name)
-                self.selectedItem = sentItem
-                assetsVC?.selectedItem(sentItem)
-                self.sentItem = nil
-            }
-            self.maybeShowTutorial("Detail")
-            self.setupTools()
-            
-            if (getTargetName() == "Builder") {
-                undoButton.frame = CGRect(x: self.toolsButton.frame.minX, y: self.toolsButton.frame.maxY + 8, width: self.toolsButton.frame.width, height: self.toolsButton.frame.height)
-            }
+            setupBottomSheet()
+            setupAssetVC()
+            setupTools()
             self.callLayout = false
         }
+        
     }
     
     @objc func backPressed() {
-            // Does a check to see if the imagePath is null, if it is an image coming
-            // from a path then it can't enter back into live view
-            // Or checks if the raw image is null, if not then the image
-            // came from the user's gallery
-            if let imagePath = self.imagePath {
-                self.augmentedView.stopRunning()
-                self.navigationController?.popViewController(animated: true)
-            } else if let rawImage = self.rawImage {
-                self.augmentedView.stopRunning()
-                self.navigationController?.popViewController(animated: true)
-            } else {
-                if (!self.isLiveView) {
-                    self.enableLiveView(true)
-                } else {
-                    self.augmentedView.stopRunning()
-                    self.navigationController?.popViewController(animated: true)
-                }
-            }
-    }
-    
-    @objc func cancelPressed() {
         if tools?.isActive == true {
-            tools?.cancelPressed()
             tools?.finish()
+        } else {
+            self.navigationController?.popViewController(animated: true)
         }
     }
     
-    //for:change:forward:
-    func historyChanged(_ asset: CBAugmentedAsset, change: CBUndoChange, forward: Bool) {
+    
+    func historyChanged(_ change: CBUndoChange, assetID: String, userData: [String : String], forward: Bool) {
         switch change {
             case .mask:
-                //print("something was (drawn/undrawn)")
-                if (self.selectedItem?.type == .floor) == true {
-                    self.hasCreatedFloor = true
-                    self.maybeShowTutorial("Rotation")
-                } else if (self.selectedItem?.type == .paint) == true {
-                    self.hasPainted = true
-                    self.maybeShowTutorial("Detail")
-                }
+                print("something was (drawn/undrawn)")
                 break;
             case .paintColor:
                 if(!forward) {
-                    self.undoResult(asset)
+                    self.undoResult(assetID, userData: userData)
                 }
-                //print("paint color was changed")
+                print("paint color was changed")
                 break
             case .paintSheen:
                 break
-        }
-        self.undoButton.isEnabled = self.augmentedView.undoSize > 0
-    }
-    
-    func assetLongPressed(_ asset: CBAugmentedAsset) {
-        self.assetsVC?.removeAsset(asset.assetID)
-    }
-    
-    func assetTapped(_ asset: CBAugmentedAsset) {
-        if let model = asset as? CBAugmentedModel {
-            model.isEditingPosition = !model.isEditingPosition
         }
     }
     
@@ -347,101 +237,24 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
         
         if (!hasVideoCamera) { isLiveView = false }
         self.tools?.isLiveMode = isLiveView
-        if(incomingSharedProject!) {
-            isLiveView = false
-            self.incomingSharedProject = false
-        }
         
         if (isLiveView) {
-            //print("starting live mode")
+            print("starting live mode")
             setToolMode(.fill);
             ImageManager.sharedInstance.proceedWithCameraAccess(self, handler: {
                 //Gained camera access
                 self.augmentedView.startRunning()
-                
             })
             self.captureButton.isHidden = false
         } else {
-            //print("starting still mode")
+            print("starting still mode")
             setToolMode(.paintbrush);
             self.cameraControls.isHidden = true
             wheelContainer.isHidden = false
-            self.tools?.setToolColors(.paintbrush)
-            self.tools?.brushButton.isHidden = true
-            self.tools?.eraserButton.isHidden = true
-            self.maybeShowTutorial("Detail")
+            self.tools?.setToolColors(self.tools?.brushButton.imageView)
         }
     }
     
-    func maybeShowItemTutorial(_ item:BrandItem) {
-        if (item.type == .paint) {
-            maybeShowTutorial("Paint")
-        } else if (item.type == .floor) {
-            maybeShowTutorial("Floor")
-        } else {
-            maybeShowTutorial("Model")
-        }
-    }
-    
-    func hasSeenTutorial(_ tutorial: String) -> Bool {
-        let settingsKey = "hasSeen\(tutorial)Tutorial"
-        
-        return defaults.bool(forKey: settingsKey)
-    }
-    
-    func setHasSeenTutorial(_ tutorial: String) {
-        let settingsKey = "hasSeen\(tutorial)Tutorial"
-        
-        defaults.set(true, forKey: settingsKey)
-        defaults.synchronize()
-    }
-    
-    func maybeShowTutorial(_ tutorial: String) {
-        
-        if (hasSeenTutorial(tutorial)) {
-            return
-        }
-        
-        let hud = JGProgressHUD(style: .dark) 
-        hud.indicatorView = JGProgressHUDImageIndicatorView(image: UIImage(named: "ic_tap")!)
-        
-        switch tutorial {
-        case "Rotation":
-            if ((self.selectedItem?.type == .floor) == false || !self.hasCreatedFloor) {
-                return
-            }
-            hud.textLabel.text = "Rotate flooring by twisting with two fingers"
-            hud.indicatorView = JGProgressHUDImageIndicatorView(image: UIImage(named: "ic_rotate")!)
-        case "Detail":
-            if (self.isLiveView || self.selectedItem?.type == .paint || !self.hasPainted) {
-                return
-            }
-            hud.textLabel.text = "Draw or erase areas that require further detail"
-            break
-        case "Paint":
-            hud.textLabel.text = "Tap on a wall to apply a color"
-            break
-        case "Floor":
-            hud.textLabel.text = "Tap on the floor"
-            break
-        case "Model":
-            hud.textLabel.text = "Tap on the floor to place model"
-            break
-        default:
-            return
-        }
-        
-        hud.show(in: self.view)
-        hud.tapOutsideBlock = { hud in
-            hud.dismiss()
-        }
-        hud.tapOnHUDViewBlock = { hud in
-            hud.dismiss()
-        }
-        hud.dismiss(afterDelay: 3.0)
-        
-        setHasSeenTutorial(tutorial)
-    }
     
     /************************
      *
@@ -449,46 +262,19 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
      *
      *///////////////////////
     
-    func newCBAugmentedAsset(_ itemType:CBAssetType, _ assetID:String) -> CBAugmentedAsset? {
-        
-        if (!self.augmentedView.scene.canAppendAsset(itemType)) {
-            return nil
-        }
-        
-        switch itemType {
-            case .paint:
-                return CBRemodelingPaint(assetID: assetID)
-            case .floor:
-                return CBRemodelingFloor(assetID: assetID)
-            case .model:
-                return CBRemodelingFurniture(assetID: assetID)
-            default:
-                return nil
-        }
+    
+    func appendFloor(_ floor: CBRemodelingFloor) {
+        self.augmentedView.scene.appendAsset(floor)
     }
     
-    func existingCBAugmentedAsset(_ asset:Asset) -> CBAugmentedAsset? {
-        //print("Looking up asset with ID \(asset.assetID)")
-        guard let existingCBAsset = self.augmentedView.scene.assets[asset.assetID] else {
-            return nil
-        }
-        return existingCBAsset
-    }
-    
-    func appendCBAugmentedAsset(_ asset:CBAugmentedAsset) {
-        //print("Appending asset with ID \(asset.assetID)")
-        self.augmentedView.scene.appendAsset(asset)
-    }
-
-    func replaceCBAugmentedAsset(_ cbAsset: CBAugmentedAsset, _ forAsset:Asset) {
-        self.augmentedView.scene.removeAsset(forAsset.assetID)
-        self.augmentedView.scene.appendAsset(cbAsset)
+    func appendPaint(_ paint: CBRemodelingPaint) {
+        self.augmentedView.scene.appendAsset(paint)
     }
     
     func removeAsset(_ asset: Asset) {
         if let asset = self.augmentedView.scene.assets[asset.assetID] {
             if self.augmentedView.scene.removeAsset(asset.assetID) {
-                print("Deleted asset with ID \(asset.assetID)")
+                print("deleted asset with ID \(asset.assetID)")
             } else {
                 print("failed to delete")
             }
@@ -503,106 +289,64 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
     }
     
     func assetUpdated(_ asset: Asset) {
-        if let item = asset.item, let selectedAsset = self.augmentedView.scene.selectedAsset {
-            if let floor = selectedAsset as? CBRemodelingFloor, item.type == .floor {
-                floor.setPath(item.assetPath, scale: item.scale)
-            } else if let paint = selectedAsset as? CBRemodelingPaint, item.type == .paint {
-                paint.color = item.color
-            } else if let furniture = selectedAsset as? CBRemodelingFurniture {
-                furniture.setPath(item.assetPath, scale: item.scale)
+        self.selectedItem = asset.item
+        if let item = asset.item {
+            if item.isFlooring {
+                if let floor = self.augmentedView.scene.selectedFloor {
+                    floor.path = item.getAssetPath().path
+                    floor.scale = item.scale
+                    floor.setUserData("ID", value: item.itemID)
+                }
+            } else {
+                if let paint = self.augmentedView.scene.selectedPaint {
+                    paint.color = item.color
+                    paint.setUserData("ID", value: item.itemID)
+                }
             }
-            
-            self.selectedItem = asset.item
-            selectedAsset.setUserData("ID", value: item.id)
-//            favoritesButton.tintColor = item.isInFavorites ? UIColor.red : UIColor.white
         }
     }
     
-    func undoResult(_ asset:CBAugmentedAsset) {
-        self.assetsVC?.undo(asset)
+    func undoResult(_ assetID: String, userData: [String: String]) {
+        self.assetsVC?.undo(assetID, userData: userData)
     }
     
     func wheelItemSelected(_ item:BrandItem) {
-        let callback = {
-            hideProgress()
-            self.maybeShowItemTutorial(item)
-            self.assetsVC?.selectedItem(item)
-        }
-        
-        if item.hasThumbnail == false {
-            callback()
-        } else {
-            item.downloadAssets(completed: { (success) in
-                if (success) {
-                    callback()
-                } else {
-                    //show unavailable
-                    displayError(message: "Asset is unavailable")
-                }
-            })
-        }
+        assetsVC?.selectedItem(item)
     }
     
-    func getSelectedItem() -> BrandItem {
-        return self.selectedItem!
-    }
     
     /************************
      *
      *       LISTENERS
      *
      *///////////////////////
+    
+    
 
-    @objc func rightButtonPressed() {
-        if (!isLiveView) {
-            let project = VisualizerProject.currentProject
-            displayProgress("saving project...", progress: 0.0)
-            project.appendImage(image: image)
-            let path = image.directoryPath!.path
-            print("TAKEN IMAGE PATH \(path) ")
-            image.markModified()
-            self.augmentedView.scene.save(toDirectory: path, compressed: false) {_ in
-                self.performSegue(withIdentifier: "showDetails", sender: self)
-                self.augmentedView.stopRunning()
-                hideProgress()
-            }
-            
-        } else {
-//            self.rightButton.isEnabled = false
+    @objc func donePressed() {
+        let project = VisualizerProject.currentProject
+        displayProgress("saving...", progress: 0.0)
+        project.appendImage(image: image)
+        let path = image.directoryPath!.path
+        image.markModified()
+        self.augmentedView.scene.save(toDirectory: path, compressed: false)
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            self.performSegue(withIdentifier: "showDetails", sender: self)
+            self.augmentedView.stopRunning()
+            hideProgress()
         }
-    }
-    
-    @objc func applyPressed() {
-        if tools?.isActive == true {
-            tools?.applyPressed()
-            tools?.showTools(true)
-            tools?.finish()
-        }
-    }
-    
-    func cartPressed() {
-        if let name = self.selectedItem?.name {
-            displayMessage("added \(name) to cart", isSuccess: true)
-        }
-    }
-    
-    func displayEditable() {
-        displayMessage("You are now able to edit the shared project")
     }
     
     
     @IBAction func floatingItemButtonPressed(_ sender: Any) {
-        self.view.bringSubview(toFront: bottomSheet.view)
+        self.view.bringSubviewToFront(bottomSheet.view)
         //self.assetsVC?.view.isHidden = true
         self.bottomSheet.show(true)
     }
     
     @IBAction func undoButtonPressed(_ sender: AnyObject) {
-        self.augmentedView.undo()
-    }
-    
-    @IBAction func moreButtonPressed(_ sender: Any) {
-        self.showMoreMenu(self.moreButtonContainer.transform == .identity)
+        self.augmentedView.undo();
     }
     
     @IBAction func assetsButtonPressed() {
@@ -610,17 +354,18 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
         self.assetsVC?.refresh()
     }
     
-    @IBAction func favoritesButtonPressed(_ sender: Any) {
-        
+    @IBAction func toolPressed(_ sender: AnyObject) {
+        let show = self.tools?.toolsContainer.isHidden == true
+        self.tools?.showTools(show)
     }
     
     @IBAction func capturePressed(_ sender: AnyObject) {
-        
-        self.showMoreMenu(false)
-        self.moreButton.isHidden = true
         self.wheelContainer.isHidden = true
+        
+        self.reshootButton.isHidden = false
+        self.confirmButton.isHidden = false
         self.captureButton.isHidden = true
-        self.cameraControls.isHidden = false
+        self.tools?.showTools(false)
         
         setToolMode(.none);
         
@@ -628,26 +373,20 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
     }
     
     @IBAction func reshootPressed(_ sender: AnyObject) {
-        self.moreButton.isHidden = false
-        self.showMoreMenu(false)
         self.wheelContainer.isHidden = false
+        self.reshootButton.isHidden = true
+        self.confirmButton.isHidden = true
         self.captureButton.isHidden = false
-        self.cameraControls.isHidden = true
         
         self.enableLiveView(true)
     }
     
-    
-    @IBAction func toolsPressed(_ sender: Any) {
-        self.tools?.toggle()
-    }
-    
     @IBAction func confirmPressed(_ sender: AnyObject) {
-        self.moreButton.isHidden = false
         self.wheelContainer.isHidden = false
-        self.cameraControls.isHidden = true
-        self.rightButton.isEnabled = true
-        
+        self.reshootButton.isHidden = true
+        self.confirmButton.isHidden = true
+        self.doneButton.isEnabled = true
+        self.captureButton.isHidden = false
         showWheel(true)
         enableLiveView(false)
     }
@@ -658,41 +397,20 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
     }
     
     
-    //pass item from color finder
-    func sendItem(_ item: BrandItem) {
-        self.sentItem = item
+    @IBAction func favoritesPressed(_ sender: Any) {
+        Favorites.sharedInstance.toggle(self.selectedItem!)
+        favoritesButton.item = self.selectedItem
     }
     
-    func toggleRightButton() {
-        rightButton.title = "Save"
-        rightButton.isEnabled = !isLiveView
-    }
-    
-    
-    /************************
-     *
-     *      TOOL HANDLING
-     *
-     *///////////////////////
-    
-    func lightingStart() -> CBLightingType {
-        showMoreMenu(false)
+    func lightingStart() -> CBLightingType{
         self.captureButton.isHidden = true
         self.assetsVC!.view.isHidden = true
-        self.moreButton.isHidden = true
+        self.assetsButton.isHidden = true
+        self.toolButton.isHidden = true
+        self.undoButton.isHidden = true
         showWheel(false)
         self.floatingItemButton.isHidden = true
-        navigationItem.leftBarButtonItems = nil
-        navigationItem.setLeftBarButton(UIBarButtonItem(title: "Cancel",
-                                                            style: UIBarButtonItemStyle.plain,
-                                                            target: self,
-                                                            action: #selector(self.cancelPressed)),
-                                             animated: false)
         
-        self.rightButton.title = "Apply"
-        self.rightButton.action = #selector(self.applyPressed)
-        self.rightButton.isEnabled = true
-
         return self.augmentedView.scene.lightingAdjustment
     }
     
@@ -700,14 +418,11 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
         if(isLiveView) {
             self.captureButton.isHidden = false
         }
-        self.showMoreMenu(false)
         
+        self.toolButton.isHidden = false
+        self.assetsButton.isHidden = false
+        self.undoButton.isHidden = false
         self.floatingItemButton.isHidden = false
-        self.moreButton.isHidden = false
-        
-        navigationItem.setLeftBarButton(self.backButton, animated: false)
-        self.toggleRightButton()
-        self.rightButton.action = #selector(self.rightButtonPressed)
     }
     
     func setToolMode(_ mode: CBToolMode) {
@@ -721,16 +436,19 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
             case .eraser:
                 image = UIImage(named: "ic_eraser")
             default:
-                image = UIImage(named: "ic_paintbrush")
+                image = UIImage(named: "ic_adjustment")
         }
-        self.toolsButton.setImage(image, for: .normal)
-        self.toolsButton.imageView?.tintColor = UIColor.white
-        
-        self.showMoreMenu(false)
+        self.toolButton.setImage(image, for: .normal)
+        self.toolButton.imageView?.tintColor = UIColor.white
     }
     
     func setLightingMode(_ light: CBLightingType) {
         self.augmentedView.scene.lightingAdjustment = light
+    }
+    
+    func updateFavorites(_ item: BrandItem) {
+        self.selectedItem = item
+        self.wheel.updateFavorites()
     }
     
     
@@ -742,16 +460,13 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
     
     
     func showWheel(_ show:Bool, duration: TimeInterval = 0.2) {
-        //print("show wheel: \(show)")
+        print("show wheel: \(show)")
         var constant:CGFloat = 0
         var size:CGFloat = 1
         
         if(!show) {
             constant = -125
             size = -1
-            self.productsLabel.isHidden = false
-        } else {
-            self.productsLabel.isHidden = true
         }
         
         UIView.animate(withDuration: duration, delay: 0.0, options: .curveEaseIn, animations: {
@@ -759,33 +474,5 @@ class ARViewController: UIViewController, WheelDelegate, ToolDelegate, AssetDele
             self.wheelShowHideButton.transform = CGAffineTransform(scaleX: 1, y: size)
             self.view.layoutIfNeeded()
         })
-    }
-    
-    func showMoreMenu(_ show: Bool) {
-        UIView.animate(withDuration: 0.15, delay: 0.0, options: .curveEaseInOut, animations: {
-            if show {
-                self.moreButtonContainer.transform = CGAffineTransform(rotationAngle: CGFloat.pi / 4)
-            } else {
-                self.moreButtonContainer.transform = .identity
-            }
-            
-            self.assetsVC?.view.isHidden = true
-            self.tools?.showTools(false)
-            self.assetsButton.isHidden = !show
-            self.toolsButton.isHidden = !show
-            self.undoButton.isHidden = !show
-            
-            if (getTargetName() == "Builder") {
-                self.assetsButton.isHidden = true
-            }
-            
-            if(!(getTargetName() == "ShawDemo")) {
-                self.favoritesButton.isHidden = !show
-            }
-            
-            
-        }) {(true) in
-        }
-        self.view.layoutIfNeeded()
     }
 }

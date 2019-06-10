@@ -76,9 +76,7 @@ class SampleCollectionViewController: UICollectionViewController, SampleImageDel
     }
     
     func sampleSelected(_ room:SampleRoom, index: Int) {
-        displayProgress("Downloading...", progress: 0.05)
-        print("Room : \(room.name)")
-        print("Index: \(index)")
+        displayProgress("Downloading...", progress: 0.0)
         sampleImages.downloadZip(room: room.name, index: String(index))
     }
 }

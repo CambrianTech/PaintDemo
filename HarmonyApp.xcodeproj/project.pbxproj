@@ -50,7 +50,6 @@
 		7C3218E21E858C0000BC7D5D /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7948A581D02377D006FA93A /* ImageIO.framework */; };
 		7C3218E31E858C0000BC7D5D /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7948A561D023777006FA93A /* Accelerate.framework */; };
 		7C3218E81E858C0000BC7D5D /* Assets-Shared.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E79489DC1D02368A006FA93A /* Assets-Shared.xcassets */; };
-		7C3218E91E858C0000BC7D5D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E7821CFD1D4BF16A00393DB8 /* GoogleService-Info.plist */; };
 		7C3218EB1E858C0000BC7D5D /* BrandModel.realm in Resources */ = {isa = PBXBuildFile; fileRef = E7E829361D0A90C10034B6BA /* BrandModel.realm */; };
 		7C3218FD1E8591CB00BC7D5D /* Assets-Demo.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C3218FC1E8591CB00BC7D5D /* Assets-Demo.xcassets */; };
 		7C55E1A11EA6A83D0085CDD0 /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C55E19F1EA6A83D0085CDD0 /* Asset.swift */; };
@@ -235,7 +234,6 @@
 		E769E4981D41945B00AD70C9 /* ProjectDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectDetailsViewController.swift; sourceTree = "<group>"; };
 		E769E4A71D41C1E200AD70C9 /* ProjectImageCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProjectImageCollection.swift; path = ../Controls/ProjectImageCollection.swift; sourceTree = "<group>"; };
 		E769E4C61D42AEA000AD70C9 /* ProjectImageBeforeAfterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ProjectImageBeforeAfterView.swift; path = ../Controls/ProjectImageBeforeAfterView.swift; sourceTree = "<group>"; };
-		E7821CFD1D4BF16A00393DB8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E79001861D06220500C56B5E /* RoomCalculatorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoomCalculatorViewController.swift; sourceTree = "<group>"; };
 		E79489D51D02368A006FA93A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E79489DC1D02368A006FA93A /* Assets-Shared.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets-Shared.xcassets"; sourceTree = "<group>"; };
@@ -426,7 +424,6 @@
 				E79489DC1D02368A006FA93A /* Assets-Shared.xcassets */,
 				6F50209E1E92C8E400393AFD /* Assets-Lighting.xcassets */,
 				7C3218FC1E8591CB00BC7D5D /* Assets-Demo.xcassets */,
-				E7821CFD1D4BF16A00393DB8 /* GoogleService-Info.plist */,
 				7C86FD701E85A25D00635987 /* HarmonyApp-Bridging-Header.h */,
 			);
 			path = App;
@@ -644,7 +641,6 @@
 				7C86FD951E85B63E00635987 /* LaunchScreen.storyboard in Resources */,
 				7C86FD971E85B64800635987 /* Projects.storyboard in Resources */,
 				7C86FD981E85B64A00635987 /* SampleImages.storyboard in Resources */,
-				7C3218E91E858C0000BC7D5D /* GoogleService-Info.plist in Resources */,
 				E710CBFB1EAD468C00791CEF /* Main.storyboard in Resources */,
 				7C3218EB1E858C0000BC7D5D /* BrandModel.realm in Resources */,
 				7C86FD941E85B63C00635987 /* ExploreColor.storyboard in Resources */,

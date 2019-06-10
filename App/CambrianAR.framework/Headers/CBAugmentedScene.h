@@ -13,7 +13,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-CB_PUBLIC
 @interface CBAugmentedScene : NSObject
 
 @property (readonly, nonatomic, nonnull) NSString *sceneID;
@@ -39,13 +38,9 @@ CB_PUBLIC
 
 - (NSDictionary<NSString *, CBAugmentedAsset *>*)getAssets:(CBAssetType)type;
 
-- (void) saveToDirectory:(nonnull NSString *)path compressed:(BOOL)compress completion:(void (^)(NSString* finalPath))completion;
+- (NSString *) saveToDirectory:(nonnull NSString *)path compressed:(BOOL)compress;
 
 - (BOOL) appendAsset:(nonnull CBAugmentedAsset *)asset;
-
-- (int) assetCount:(CBAssetType)assetType;
-
-- (BOOL) canAppendAsset:(CBAssetType)assetType;
 
 - (BOOL) removeAsset:(nonnull NSString *)assetID;
 

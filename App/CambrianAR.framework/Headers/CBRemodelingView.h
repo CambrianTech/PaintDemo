@@ -13,17 +13,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol CBRemodelingViewDelegate <CBAugmentedViewViewDelegate>
-
+@protocol CBRemodelingViewDelegate <NSObject>
 @optional
-
-- (void) historyChanged:(CBAugmentedAsset *)asset
-                 change:(CBUndoChange)change
-                forward:(BOOL)forward;
-
+- (void) historyChanged:(CBUndoChange)change assetID:(NSString *)assetID userData:(NSDictionary<NSString*, NSString*> *)userData forward:(BOOL)forward;
 @end
 
-CB_PUBLIC
 @interface CBRemodelingView : CBAugmentedView
 
 @property (weak, nonatomic, nullable) id<CBRemodelingViewDelegate> delegate;

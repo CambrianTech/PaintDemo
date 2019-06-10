@@ -8,7 +8,6 @@
 
 #import <CambrianAR/CambrianAR.h>
 
-CB_PUBLIC
 @interface CBColorResult : NSObject
 @property (strong, nonatomic, nonnull) UIColor *color;
 @property (assign, nonatomic) CGPoint position;
@@ -18,7 +17,6 @@ CB_PUBLIC
 - (void) colorsFound:(nonnull NSArray<CBColorResult *>*)results;
 @end
 
-CB_PUBLIC
 @interface CBColorFinderView : CBAugmentedView
 
 @property (weak, nonatomic, nullable) id<CBColorFinderDelegate> delegate;

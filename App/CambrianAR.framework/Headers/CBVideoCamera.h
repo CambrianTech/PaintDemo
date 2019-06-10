@@ -9,12 +9,9 @@
 #import <GLKit/GLKit.h>
 #import <CoreMedia/CoreMedia.h>
 #import <AVFoundation/AVFoundation.h>
-#import <ARKit/ARKit.h>
 
-@protocol CBVideoCameraDelegate <ARSessionDelegate>
-
-- (void) sendFrame:(CVPixelBufferRef)pixelBuffer;
-
+@protocol CBVideoCameraDelegate
+- (void) sendFrame:(CMSampleBufferRef)sampleBuffer isYUV:(BOOL)isYUV;
 @end
 
 @interface CBVideoCamera : NSObject
@@ -22,7 +19,6 @@
 @property (nonatomic, assign) BOOL isRunning;
 @property (nonatomic, assign) BOOL isPaused;
 @property (readonly) AVCaptureDevice *inputCamera;
-@property (readonly) ARSession *arSession API_AVAILABLE(ios(11.0));
 
 - (id) init:(id <CBVideoCameraDelegate>)delegate;
 

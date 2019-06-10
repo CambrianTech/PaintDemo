@@ -9,8 +9,6 @@
 #ifndef CBAugmentedTypes_h
 #define CBAugmentedTypes_h
 
-#import <Foundation/Foundation.h>
-
 typedef NS_ENUM(NSInteger, CBToolMode) {
     CBToolModeNone = 0,
     CBToolModeSelect,

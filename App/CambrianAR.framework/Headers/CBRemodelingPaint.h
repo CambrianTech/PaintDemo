@@ -7,17 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CBMaskedAsset.h"
+#import "CBAugmentedAsset.h"
 #import "CBRemodelingTypes.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-CB_PUBLIC
-@interface CBRemodelingPaint : CBMaskedAsset
+@interface CBRemodelingPaint : CBAugmentedAsset
 
-@property (nonatomic, strong, nonnull) UIColor* color;
-@property (nonatomic, assign) CBTransparency transparency;
 @property (nonatomic, assign) CBPaintSheen sheen;
+@property (nonatomic, strong, nonnull) UIColor* color;
 
 @end
 

@@ -6,14 +6,14 @@
 //  Copyright © 2017 Joel Teply. All rights reserved.
 //
 
-#import "CBMaskedAsset.h"
+#import "CBAugmentedAsset.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-CB_PUBLIC
-@interface CBRemodelingFloor : CBMaskedAsset
+@interface CBRemodelingFloor : CBAugmentedAsset
 
-- (void)setPath:(NSString *) path scale:(float)scale;
+@property (nonatomic, assign) float scale;
+@property (nonatomic, strong, nonnull) NSString* path;
 
 @end
 

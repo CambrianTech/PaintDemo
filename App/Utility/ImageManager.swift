@@ -25,7 +25,7 @@ class ImageManager:NSObject, UIImagePickerControllerDelegate, UINavigationContro
     
     var pickerCallback:((_ image: UIImage?) -> Void)!
     
-    private func imagePickerController(picker: UIImagePickerController!, didFinishPickingMediaWithInfo info:NSDictionary!) {
+    internal func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let chosenImage:UIImage = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
         picker.dismiss(animated: true, completion: nil)
         
